@@ -8,6 +8,9 @@ var bodyParser = require('body-parser');
 var routes = require('./routes/index');
 var voters = require('./routes/voters');
 var candidates = require('./routes/candidates');
+var elections = require('./routes/elections');
+
+var utils = require('./utils');
 
 var app = express();
 
@@ -23,9 +26,12 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use(utils.requestTime);
+
 app.use('/', routes);
 app.use('/voters', voters);
 app.use('/candidates', candidates);
+app.use('/elections', elections);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
