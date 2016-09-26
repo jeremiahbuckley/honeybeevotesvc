@@ -12,6 +12,8 @@ var elections = require('./routes/elections');
 
 var utils = require('./utils');
 
+var model = require('./model');
+
 var app = express();
 
 // view engine setup
