@@ -2,15 +2,19 @@ var mongoose = require('mongoose');
 
 var vote = require('./vote.js');
 
-var candidateSchema = mongoose.Schema({
-	id: Number,
-	name: String,
-	votes: [vote.voteSchema]
-});
+function makeSchema() {
+	return mongoose.Schema({
+		id: Number,
+		name: String,
+		votes: [vote.makeSchema()]
+	});
+}
 
-var candidate = mongoose.model('candidate', candidateSchema);
+function makeModel(db, schema) {
+	db.model('candidate', schema);
+}
 
 module.exports = {
-	candidateSchema: candidateSchema,
-	candidate: candidate
+	makeSchema: makeSchema,
+	makeModel: makeModel
 }

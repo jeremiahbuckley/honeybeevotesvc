@@ -7,16 +7,16 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
 
-var routes = require('./routes/index');
-var voters = require('./routes/voters');
-var candidates = require('./routes/candidates');
-var elections = require('./routes/elections');
-
 var utils = require('./utils');
 
 var model = require('./model');
 
 var port = 8000;
+
+var routes = require('./routes/index');
+var voters = require('./routes/voters');
+var candidates = require('./routes/candidates');
+var elections = require('./routes/elections');
 
 var app = express();
 
