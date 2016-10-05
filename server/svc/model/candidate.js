@@ -11,7 +11,7 @@ function makeSchema() {
 }
 
 function makeModel(db, schema) {
-	db.model('candidate', schema);
+	return db.model('candidate', schema);
 }
 
 module.exports = {

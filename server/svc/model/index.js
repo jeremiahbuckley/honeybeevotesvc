@@ -6,11 +6,13 @@ var path = require('path');
 mongoose.connect(configdb.url);
 var db = mongoose.connection;
 
-var model = {};
+var sm = {};
 	
 db.on('error', console.error);
 db.once('open', function() {
 	console.log('connection open!');
+	sm.schema = {};
+	sm.model = {};
 
 	fs
 	.readdirSync(__dirname)
@@ -23,15 +25,14 @@ db.once('open', function() {
 		var name = file.substring(0, file.indexOf("."));
 
 		console.log("loading model: " + name);
-		model[name] = {};
-		model[name]["schema"] = x.makeSchema();
-		//console.log("schema only")
-		//console.log(JSON.stringify(model[name]));
-		model[name]["model"] = x.makeModel(db, model[name]["schema"]);
-		//console.log("schema and model")
-		//console.log(JSON.stringify(model[name]));
+		sm.schema[name] = {};
+		sm.model[name] = {};
+		sm.schema[name] = x.makeSchema();
+		sm.model[name] = x.makeModel(db, sm.schema[name]);
 		console.log("loaded model: " + name);
+
 	});
+		console.log(JSON.stringify(sm));
 
 	console.log('finished require!');
 });
@@ -40,5 +41,5 @@ db.once('open', function() {
 
 module.exports = { 
 	db: db,
-	model: model 
+	sm: sm 
 }

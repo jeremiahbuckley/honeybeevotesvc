@@ -9,7 +9,7 @@ function makeSchema() {
 }
 
 function makeModel(db, schema) {
-	db.model('vote', schema);
+	return db.model('vote', schema);
 }
 
 module.exports = {

@@ -3,45 +3,63 @@ var router = express.Router();
 var MongoClient = require('mongodb').MongoClient
   , assert = require('assert');
 
-var url = 'mongodb://localhost:27017/honeybeevote';
+module.exports = function(dblayer) {
 
-/* GET users listing. */
-router.get('/', function(req, res, next) {
-	MongoClient.connect(url, function(err, db) {
-	  assert.equal(null, err);
-	  console.log("Connected successfully to server");
+	router.get('/', function(req, res, next) {
+		get(req, res, next, null);
+	});
 
-	  db.close();
-	});	
-  res.send('respond with a get voter resource');
-});
+	router.get('/:id', function(req, res, next) {
+		get(req, res, next, {id: req.params.id });
+	});
 
-router.post('/', function(req, res, next) {
-	MongoClient.connect(url, function(err, db) {
-	  assert.equal(null, err);
-	  console.log("Connected successfully to server");
+	function get(req, res, next, filter) {
+		var model = dblayer.sm.model;
+	 	model.voter.find(filter, function(error, response) {
+	 		if (error != null) {
+	 			res.status(500).send(error);
+	 		} else {
+	 			if (response == null || response == undefined || response.length == 0) {
+	 				res.status(404).send();
+	 			} else {
+			 		res.status(200).send(response)
+			 	}
+		 	}
+	 	});
+	 }
 
-        voter = reader_test_db.collection('voter');
-        if (undefined != voter) {
-        	voter.insert(req.body);
-         }
-	  db.close();
-	});	
-  res.send('respond with a post voter resource id');
-});
+	router.post('/', function(req, res, next) {
+		var model = dblayer.sm.model;
+		var voter = new model.voter(req.body);
+		voter.save(function (error, response) {
+			if (error != null) {
+				res.status(500).send(error);
+			} else {
+			  res.status(201).send(req.originalUrl + `/${voter.id}`);
+			}
+		});
+	});
 
-router.delete('/', function(req, res, next) {
-	MongoClient.connect(url, function(err, db) {
-	  assert.equal(null, err);
-	  console.log("Connected successfully to server");
+	router.delete('/:id', function(req, res, next) {
+		var model = dblayer.sm.model;
+		model.voter.find({id: req.params.id}, function (error, response) {
+			if (error != null) {
+				res.status(500).send(error)
+			} else {
+				if (response == null || response == undefined || response.length == 0) {
+					res.status(404).send();
+				} else {
+					model.voter.remove({id: req.params.id }, function(error) {
+						if (error != null) {
+							res.status(500).send(error);
+						} else {
+							res.status(200).send();
+						}
+					});
+				}
+			}
+		})
+	});
 
-        voter = reader_test_db.collection('voter');
-        if (undefined != voter) {
-        	voter.insert(req.body);
-         }
-	  db.close();
-	});	
-  res.send('respond with a delete voter resource id');
-});
-
-module.exports = router;
+	return router;
+}

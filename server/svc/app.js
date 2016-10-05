@@ -9,7 +9,7 @@ var mongoose = require('mongoose');
 
 var utils = require('./utils');
 
-var model = require('./model');
+var dblayer = require('./model');
 
 var port = 8000;
 
@@ -19,10 +19,9 @@ var candidates = require('./routes/candidates');
 var elections = require('./routes/elections');
 
 var app = express();
-
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
+console.log(app.get('env'));
+app.set('env', 'development');
+console.log(app.get('env'));
 
 // uncomment after placing your favicon in /public
 app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
@@ -35,9 +34,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(utils.requestTime);
 
 app.use('/', routes);
-app.use('/voters', voters);
-app.use('/candidates', candidates);
-app.use('/elections', elections);
+app.use('/voters', voters(dblayer));
+app.use('/candidates', candidates(dblayer));
+app.use('/elections', elections(dblayer));
 
 //mongoose.connect(db.url);
 
@@ -53,10 +52,10 @@ app.use(function(req, res, next) {
 
 // development error handler
 // will print stacktrace
-if (app.get('env') === 'development') {
+if (app.get('env') == 'development') {
   app.use(function(err, req, res, next) {
-    res.status(err.status || 500);
-    res.render('error', {
+    res.status(err.status || 500)
+    .send({
       message: err.message,
       error: err
     });
@@ -66,13 +65,14 @@ if (app.get('env') === 'development') {
 // production error handler
 // no stacktraces leaked to user
 app.use(function(err, req, res, next) {
-  res.status(err.status || 500);
-  res.render('error', {
+  res.status(err.status || 500)
+  .send({
     message: err.message,
     error: {}
   });
 });
 
 app.listen(port);
+console.log('Magic happens on port ' + port);
 
 module.exports = app;
