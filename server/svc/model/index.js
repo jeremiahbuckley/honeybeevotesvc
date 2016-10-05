@@ -32,7 +32,7 @@ db.once('open', function() {
 		console.log("loaded model: " + name);
 
 	});
-		console.log(JSON.stringify(sm));
+	//console.log(JSON.stringify(sm));
 
 	console.log('finished require!');
 });

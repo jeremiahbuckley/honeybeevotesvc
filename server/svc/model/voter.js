@@ -8,11 +8,7 @@ function makeSchema() {
 }
 
 function makeModel(db, schema) {
-	var m = db.model('voter', schema);
-	console.log(JSON.stringify(m));
-	var test = new m();
-	console.log(JSON.stringify(test));
-	return m;
+	return db.model('voter', schema);
 }
 
 module.exports = {
