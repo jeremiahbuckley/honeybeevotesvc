@@ -122,8 +122,15 @@ module.exports = function(dblayer) {
 							$pull: {
 								'votes': { id: req.params.id }
 							}
-						});
-					res.status(200).send();
+						},
+						function (error, result) {
+							if (error != null) {
+								res.status(500).send(error)
+							} else {
+								res.status(200).send();
+							}
+						}
+					);
 				}
 			}
 		});

@@ -19,37 +19,46 @@ frisby.create('POST election')
     .expectStatus(201)
     .expectHeader('Content-Type', 'text/html; charset=utf-8')
     .expectBodyContains('/elections/' + ID)
+    .after( function(error, response, body) {
+
+      frisby.create('PUT edit election')
+          .put(tc.url + '/elections/' + ID,
+            { 
+              'id' : ID, 
+              'name': NAME2
+            },
+            { json: true },
+            { headers: { 'Content-Type': 'application/json' }})
+          .inspectBody()
+          .expectStatus(200)
+          .expectHeader('Content-Type', 'text/html; charset=utf-8')
+          .expectBodyContains('/elections/' + ID)
+          .after( function(error, response, body) {
+
+            frisby.create('GET elections')
+                .get(tc.url + '/elections/' + ID)
+                .inspectBody()
+                .expectStatus(200)
+                .expectHeader('Content-Type', 'application/json; charset=utf-8')
+                .expectJSON(
+                  [{ 
+                    'id' : ID, 
+                    'name': NAME2
+                  }])
+                .after ( function (error, response, body) {
+
+                  frisby.create('DELETE elections')
+                      .delete(tc.url + '/elections/' + ID)
+                      .inspectBody()
+                      .expectStatus(200)
+                      .toss();
+                })
+                .toss();
+         })
+          .toss();
+    })
     .toss();
 
-frisby.create('PUT edit election')
-    .put(tc.url + '/elections/' + ID,
-      { 
-        'id' : ID, 
-        'name': NAME2
-      },
-      { json: true },
-      { headers: { 'Content-Type': 'application/json' }})
-    .inspectBody()
-    .expectStatus(200)
-    .expectHeader('Content-Type', 'text/html; charset=utf-8')
-    .expectBodyContains('/elections/' + ID)
-    .toss();
 
-frisby.create('GET elections')
-    .get(tc.url + '/elections/' + ID)
-    .inspectBody()
-    .expectStatus(200)
-    .expectHeader('Content-Type', 'application/json; charset=utf-8')
-    .expectJSON(
-      [{ 
-        'id' : ID, 
-        'name': NAME2
-      }])
-    .toss();
 
-frisby.create('DELETE elections')
-    .delete(tc.url + '/elections/' + ID)
-    .inspectBody()
-    .expectStatus(200)
-    .toss();
 
