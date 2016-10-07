@@ -10,7 +10,7 @@ module.exports = function(dblayer) {
 	});
 
 	router.get('/:id', function(req, res, next) {
-		get(req, res, next, {id: req.params.id });
+		get(req, res, next, { _id: req.params.id });
 	});
 
 	function get(req, res, next, filter) {
@@ -35,21 +35,21 @@ module.exports = function(dblayer) {
 			if (error != null) {
 				res.status(500).send(error);
 			} else {
-			  res.status(201).send(req.originalUrl + `/${voter.id}`);
+			  res.status(201).send(req.originalUrl + `/${voter._id}`);
 			}
 		});
 	});
 
 	router.delete('/:id', function(req, res, next) {
 		var model = dblayer.sm.model;
-		model.voter.find({id: req.params.id}, function (error, response) {
+		model.voter.find({ _id: req.params.id}, function (error, response) {
 			if (error != null) {
 				res.status(500).send(error)
 			} else {
 				if (response == null || response == undefined || response.length == 0) {
 					res.status(404).send();
 				} else {
-					model.voter.remove({id: req.params.id }, function(error) {
+					model.voter.remove({ _id: req.params.id }, function(error) {
 						if (error != null) {
 							res.status(500).send(error);
 						} else {

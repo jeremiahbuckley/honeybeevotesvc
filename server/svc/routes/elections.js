@@ -10,7 +10,7 @@ module.exports = function(dblayer) {
 	});
 
 	router.get('/:id', function(req, res, next) {
-		get(req, res, next, {id: req.params.id });
+		get(req, res, next, { _id: req.params.id });
 	});
 
 	function get(req, res, next, filter) {
@@ -35,14 +35,14 @@ module.exports = function(dblayer) {
 			if (error != null) {
 				res.status(500).send(error);
 			} else {
-			  res.status(201).send(req.originalUrl + `/${election.id}`);
+			  res.status(201).send(req.originalUrl + `/${election._id}`);
 			}
 		});
 	});
 
 	router.put('/:id', function(req, res, next) {
 		var model = dblayer.sm.model;
-		model.election.find({id: req.params.id}, function(error, response) {
+		model.election.find({ _id: req.params.id}, function(error, response) {
 			if (error != null) {
 				res.status(500).send(error);
 			} else {
@@ -52,11 +52,11 @@ module.exports = function(dblayer) {
 						if (error != null) {
 							res.status(500).send(error);
 						} else {
-							res.status(201).send(req.originalUrl + '/${election.id}');
+							res.status(201).send(req.originalUrl + '/${election._id}');
 						}
 					});
 				} else {
-					model.election.update( {id: req.params.id } , req.body, function (error, response) {
+					model.election.update( { _id: req.params.id } , req.body, function (error, response) {
 						if (error != null) {
 							res.status(500).send(error);
 						} else {
@@ -70,14 +70,14 @@ module.exports = function(dblayer) {
 
 	router.delete('/:id', function(req, res, next) {
 		var model = dblayer.sm.model;
-		model.election.find({id: req.params.id}, function (error, response) {
+		model.election.find({ _id: req.params.id}, function (error, response) {
 			if (error != null) {
 				res.status(500).send(error)
 			} else {
 				if (response == null || response == undefined || response.length == 0) {
 					res.status(404).send();
 				} else {
-					model.election.remove({id: req.params.id }, function(error) {
+					model.election.remove({ _id: req.params.id }, function(error) {
 						if (error != null) {
 							res.status(500).send(error);
 						} else {

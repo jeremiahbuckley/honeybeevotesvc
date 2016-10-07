@@ -2,7 +2,6 @@ var mongoose = require('mongoose');
 
 function makeSchema() {
 	return mongoose.Schema({
-		id: Number,
 		name: String
 	});
 }

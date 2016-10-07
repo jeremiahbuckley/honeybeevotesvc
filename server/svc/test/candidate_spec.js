@@ -118,16 +118,17 @@ frisby.create('POST candidate')
                       }
                     ]
                   }])
+                .after (function (error, response, body) {
+                  frisby.create('DELETE candidates')
+                      .delete(tc.url + '/candidates/' + IDv1)
+                      .inspectBody()
+                      .expectStatus(200)
+                      .toss();
+                    })
                 .toss();
-
-        })
-        .toss();
+          })
+          .toss();
     })
     .toss();
 
 
-// frisby.create('DELETE candidates')
-//     .delete(tc.url + '/candidates/' + IDv1)
-//     .inspectBody()
-//     .expectStatus(200)
-//     .toss();

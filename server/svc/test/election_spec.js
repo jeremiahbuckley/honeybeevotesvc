@@ -3,14 +3,12 @@ var frisby = require('frisby');
 var tc = require('./config/test_config');
 var dbConfig = require('./config/db');
 
-var ID = 223355;
 var NAME = 'Election Main 1';
 var NAME2 = 'Election North ';
 
 frisby.create('POST election')
     .post(tc.url + '/elections',
       { 
-        'id' : ID, 
         'name': NAME
       },
       { json: true },
@@ -18,13 +16,12 @@ frisby.create('POST election')
     .inspectBody()
     .expectStatus(201)
     .expectHeader('Content-Type', 'text/html; charset=utf-8')
-    .expectBodyContains('/elections/' + ID)
-    .after( function(error, response, body) {
+    .expectBodyContains('/elections/')
+    .after( function( error, response, body ) {
 
       frisby.create('PUT edit election')
-          .put(tc.url + '/elections/' + ID,
+          .put(tc.url + body,
             { 
-              'id' : ID, 
               'name': NAME2
             },
             { json: true },
@@ -32,23 +29,22 @@ frisby.create('POST election')
           .inspectBody()
           .expectStatus(200)
           .expectHeader('Content-Type', 'text/html; charset=utf-8')
-          .expectBodyContains('/elections/' + ID)
+          .expectBodyContains('/elections/')
           .after( function(error, response, body) {
 
             frisby.create('GET elections')
-                .get(tc.url + '/elections/' + ID)
+                .get(tc.url + body)
                 .inspectBody()
                 .expectStatus(200)
                 .expectHeader('Content-Type', 'application/json; charset=utf-8')
                 .expectJSON(
                   [{ 
-                    'id' : ID, 
                     'name': NAME2
                   }])
-                .after ( function (error, response, body) {
+                .afterJSON ( function (json) {
 
                   frisby.create('DELETE elections')
-                      .delete(tc.url + '/elections/' + ID)
+                      .delete(tc.url + '/elections/' + json[0]._id)
                       .inspectBody()
                       .expectStatus(200)
                       .toss();

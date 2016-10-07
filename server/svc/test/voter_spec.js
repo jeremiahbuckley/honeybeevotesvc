@@ -3,14 +3,11 @@ var frisby = require('frisby');
 var tc = require('./config/test_config');
 var dbConfig = require('./config/db');
 
-var ID = 1007;
 var NAME = 'Aaron Beagel';
-var NAME2 = 'Chris Durden';
 
 frisby.create('POST voter')
     .post(tc.url + '/voters',
       { 
-        'id' : ID, 
         'name': NAME
       },
       { json: true },
@@ -18,23 +15,22 @@ frisby.create('POST voter')
     .inspectBody()
     .expectStatus(201)
     .expectHeader('Content-Type', 'text/html; charset=utf-8')
-    .expectBodyContains('/voters/' + ID)
+    .expectBodyContains('/voters/')
     .after ( function (error, response, body) {
 
       frisby.create('GET voters')
-          .get(tc.url + '/voters/' + ID)
+          .get(tc.url + body)
           .inspectBody()
           .expectStatus(200)
           .expectHeader('Content-Type', 'application/json; charset=utf-8')
           .expectJSON(
             [{ 
-              'id' : ID, 
               'name': NAME
             }])
-          .after( function(error, response, body) {
+          .afterJSON( function(json) {
 
             frisby.create('DELETE voters')
-                .delete(tc.url + '/voters/' + ID)
+                .delete(tc.url + '/voters/' + json[0]._id)
                 .inspectBody()
                 .expectStatus(200)
                 .toss();
