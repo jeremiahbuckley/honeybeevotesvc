@@ -3,7 +3,7 @@ var router = express.Router();
 var MongoClient = require('mongodb').MongoClient
   , assert = require('assert');
 
- module.exports = function(dblayer) {
+module.exports = function(dblayer) {
 
 	router.get('/', function(req, res, next) {
 		get(req, res, next, null);
