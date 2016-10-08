@@ -2,9 +2,11 @@ var mongoose = require('mongoose');
 
 function makeSchema() {
 	return mongoose.Schema({
-		id: Number,
+		voter_id: Number,
 		value: Number,
-		entrytime: Date
+		expired: Boolean,
+		starttime: Date,
+		endtime: Date
 	});
 }
 

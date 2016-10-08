@@ -1,49 +1,5 @@
 var express = require('express');
 var router = express.Router();
-
-
-// module.exports = function(db) {
-// 	router.get('/', function(req, res, next) {
-// 		res.send('respond with a get candidate resource');
-// 	});
-
-// 	router.post('/', function(req, res, next) {
-// 		res.send('respond with a post candidate resource id');
-// 	});
-
-// 	router.put('/', function(req, res, next) {
-// 		res.send('respond with a put candidate resource id');
-// 	});
-
-// 	router.delete('/', function(req, res, next) {
-// 		res.send('respond with a delete candidate resource id');
-// 	});
-
-// 	router.get('/:id/votes', function(req, res, next) {
-// 		res.send(`respond with get votes for candidate id ${req.params.id}`);
-// 	});
-
-// 	router.post('/:id/votes', function(req, res, next) {
-// 		res.send(`respond with post vote id for candidate id ${req.params.id}`);
-// 	});
-
-// 	router.put('/:id/votes', function(req, res, next) {
-// 		res.send(`respond with put vote id for candidate id ${req.params.id}`);
-// 	});
-
-// 	router.delete('/:id/votes', function(req, res, next) {
-// 		res.send(`respond with delete vote id for candidate id ${req.params.id}`);
-// 	});
-
-// 	return router;
-// }
-
-
-
-
-
-var express = require('express');
-var router = express.Router();
 var MongoClient = require('mongodb').MongoClient
   , assert = require('assert');
 
@@ -52,14 +8,14 @@ module.exports = function(dblayer) {
 
 
 	router.get('/:candidateid/votes', function(req, res, next) {
-		get(req, res, next, { id: req.params.candidateid });
+		getVote(req, res, next, { _id: req.params.candidateid });
 	});
 
 	router.get('/:candidateid/votes/:id', function(req, res, next) {
-		get(req, res, next, { id: req.params.candidateid, "votes.id" : req.params.id });
+		getVote(req, res, next, { _id: req.params.candidateid, votes: { $elemMatch: { _id : req.params.id }}});
 	});
 
-	function get(req, res, next, filter) {
+	function getVote(req, res, next, filter) {
 		var model = dblayer.sm.model;
 	 	model.candidate.find(filter, function(error, response) {
 	 		if (error != null) {
@@ -77,7 +33,7 @@ module.exports = function(dblayer) {
 	router.post('/:candidateid/votes', function(req, res, next) {
 		var model = dblayer.sm.model;
 		var vote = new model.vote(req.body);
-		model.candidate.find( {id: req.params.candidateid }, function (error, response) {
+		model.candidate.find( { _id: req.params.candidateid }, function (error, response) {
 			if (error != null) {
 				res.status(500).send(error);
 			} else {
@@ -85,7 +41,7 @@ module.exports = function(dblayer) {
 					res.status(404).send();
 				} else  {
 					model.candidate.update( 
-						{ id: req.params.candidateid }, 
+						{ _id: req.params.candidateid }, 
 						{
 							$push: {
 								votes : {
@@ -97,7 +53,10 @@ module.exports = function(dblayer) {
 							if (error != null) {
 								res.status(500).send(error)
 							} else {
-								res.status(201).send(req.originalUrl + `/${req.body.id}`);
+								model.candidate.find( { _id: req.params.candidateid }, 
+									function (error, response) { 
+										res.status(201).send(req.originalUrl + `/${response[0].votes[0]._id}`);
+									});
 							}
 						}
 					);
@@ -109,7 +68,7 @@ module.exports = function(dblayer) {
 	router.delete('/:candidateid/votes/:id', function(req, res, next) {
 		var model = dblayer.sm.model;
 		var vote = new model.vote(req.body);
-		model.candidate.find( {id: req.params.candidateid }, function (error, response) {
+		model.candidate.find( { _id: req.params.candidateid }, function (error, response) {
 			if (error != null) {
 				res.status(500).send(error);
 			} else {
@@ -117,10 +76,10 @@ module.exports = function(dblayer) {
 					res.status(404).send();
 				} else  {
 					model.candidate.update( 
-						{ id: req.params.candidateid }, 
+						{ _id: req.params.candidateid }, 
 						{
 							$pull: {
-								'votes': { id: req.params.id }
+								'votes': { _id: req.params.id }
 							}
 						},
 						function (error, result) {
@@ -143,7 +102,7 @@ module.exports = function(dblayer) {
 	});
 
 	router.get('/:id', function(req, res, next) {
-		get(req, res, next, {id: req.params.id });
+		get(req, res, next, { _id: req.params.id });
 	});
 
 	function get(req, res, next, filter) {
@@ -168,14 +127,14 @@ module.exports = function(dblayer) {
 			if (error != null) {
 				res.status(500).send(error);
 			} else {
-			  res.status(201).send(req.originalUrl + `/${candidate.id}`);
+			  res.status(201).send(req.originalUrl + `/${candidate._id}`);
 			}
 		});
 	});
 
 	router.put('/:id', function(req, res, next) {
 		var model = dblayer.sm.model;
-		model.candidate.find({id: req.params.id}, function(error, response) {
+		model.candidate.find({ _id: req.params.id}, function(error, response) {
 			if (error != null) {
 				res.status(500).send(error);
 			} else {
@@ -185,11 +144,11 @@ module.exports = function(dblayer) {
 						if (error != null) {
 							res.status(500).send(error);
 						} else {
-							res.status(201).send(req.originalUrl + '/${candidate.id}');
+							res.status(201).send(req.originalUrl + '/${candidate._id}');
 						}
 					});
 				} else {
-					model.candidate.update( {id: req.params.id } , req.body, function (error, response) {
+					model.candidate.update( { _id: req.params.id } , req.body, function (error, response) {
 						if (error != null) {
 							res.status(500).send(error);
 						} else {
@@ -203,14 +162,14 @@ module.exports = function(dblayer) {
 
 	router.delete('/:id', function(req, res, next) {
 		var model = dblayer.sm.model;
-		model.candidate.find({id: req.params.id}, function (error, response) {
+		model.candidate.find({_id: req.params.id}, function (error, response) {
 			if (error != null) {
 				res.status(500).send(error)
 			} else {
 				if (response == null || response == undefined || response.length == 0) {
 					res.status(404).send();
 				} else {
-					model.candidate.remove({id: req.params.id }, function(error) {
+					model.candidate.remove({_id: req.params.id }, function(error) {
 						if (error != null) {
 							res.status(500).send(error);
 						} else {
