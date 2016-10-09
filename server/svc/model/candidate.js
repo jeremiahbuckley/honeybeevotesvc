@@ -4,7 +4,7 @@ var vote = require('./vote.js');
 
 function makeSchema() {
 	return mongoose.Schema({
-		name: {
+		name: { 
 			type: String,
 			required: true
 		},

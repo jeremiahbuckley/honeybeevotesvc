@@ -2,8 +2,9 @@ var express = require('express');
 var router = express.Router();
 var MongoClient = require('mongodb').MongoClient
   , assert = require('assert');
+var mongoose = require('mongoose');
 
-module.exports = function(dblayer) {
+module.exports = function() {
 
 	router.get('/', function(req, res, next) {
 		get(req, res, next, null);
@@ -14,8 +15,7 @@ module.exports = function(dblayer) {
 	});
 
 	function get(req, res, next, filter) {
-		var model = dblayer.sm.model;
-	 	model.election.find(filter, function(error, response) {
+	 	mongoose.models.election.find(filter, function(error, response) {
 	 		if (error != null) {
 	 			res.status(500).send(error);
 	 		} else {
@@ -29,8 +29,7 @@ module.exports = function(dblayer) {
 	 }
 
 	router.post('/', function(req, res, next) {
-		var model = dblayer.sm.model;
-		var election = new model.election(req.body);
+		var election = new mongoose.models.election(req.body);
 		election.save(function (error, response) {
 			if (error != null) {
 				res.status(500).send(error);
@@ -41,13 +40,12 @@ module.exports = function(dblayer) {
 	});
 
 	router.put('/:id', function(req, res, next) {
-		var model = dblayer.sm.model;
-		model.election.find({ _id: req.params.id}, function(error, response) {
+		mongoose.models.election.find({ _id: req.params.id}, function(error, response) {
 			if (error != null) {
 				res.status(500).send(error);
 			} else {
 				if (response == null || response == undefined || response.length == 0) {
-					var election = new model.election(req.body);
+					var election = new mongoose.models.election(req.body);
 					election.save(function (error, response) {
 						if (error != null) {
 							res.status(500).send(error);
@@ -56,7 +54,7 @@ module.exports = function(dblayer) {
 						}
 					});
 				} else {
-					model.election.update( { _id: req.params.id } , req.body, function (error, response) {
+					mongoose.models.election.update( { _id: req.params.id } , req.body, function (error, response) {
 						if (error != null) {
 							res.status(500).send(error);
 						} else {
@@ -69,15 +67,14 @@ module.exports = function(dblayer) {
 	});
 
 	router.delete('/:id', function(req, res, next) {
-		var model = dblayer.sm.model;
-		model.election.find({ _id: req.params.id}, function (error, response) {
+		mongoose.models.election.find({ _id: req.params.id}, function (error, response) {
 			if (error != null) {
 				res.status(500).send(error)
 			} else {
 				if (response == null || response == undefined || response.length == 0) {
 					res.status(404).send();
 				} else {
-					model.election.remove({ _id: req.params.id }, function(error) {
+					mongoose.models.election.remove({ _id: req.params.id }, function(error) {
 						if (error != null) {
 							res.status(500).send(error);
 						} else {

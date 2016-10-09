@@ -35,9 +35,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(utils.requestTime);
 
 app.use('/', routes);
-app.use('/voters', voters(dblayer));
-app.use('/candidates', candidates(dblayer));
-app.use('/elections', elections(dblayer));
+app.use('/voters', voters());
+app.use('/candidates', candidates());
+app.use('/elections', elections());
 
 //mongoose.connect(db.url);
 

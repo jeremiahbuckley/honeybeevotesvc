@@ -3,10 +3,12 @@ var router = express.Router();
 var MongoClient = require('mongodb').MongoClient
   , assert = require('assert');
 var bzVote = require('../biz/votelogic.js');
+var mongoose = require('mongoose');
 
-module.exports = function(dblayer) {
 
-	var bizVote = bzVote(dblayer);
+module.exports = function() {
+
+	var bizVote = bzVote();
 
 	router.get('/:candidateid/votes', function(req, res, next) {
 		getVote(req, res, next, { _id: req.params.candidateid });
@@ -17,8 +19,7 @@ module.exports = function(dblayer) {
 	});
 
 	function getVote(req, res, next, filter) {
-		var model = dblayer.sm.model;
-	 	model.candidate.find(filter, function(error, response) {
+	 	mongoose.models.candidate.find(filter, function(error, response) {
 	 		if (error != null) {
 	 			res.status(500).send(error);
 	 		} else {
@@ -32,19 +33,17 @@ module.exports = function(dblayer) {
 	 }
 
 	router.post('/:candidateid/votes', function(req, res, next) {
-		var model = dblayer.sm.model;
-		var vote = new model.vote(req.body);
-		console.log(vote);
+		var vote = new mongoose.models.vote(req.body);
+		console.log(mongoose);
 		bizVote.setEndtimeAndExpired(vote);
-		console.log(vote);
-		model.candidate.find( { _id: req.params.candidateid }, function (error, response) {
+		mongoose.models.candidate.find( { _id: req.params.candidateid }, function (error, response) {
 			if (error != null) {
 				res.status(500).send(error);
 			} else {
 				if (response == null || response == undefined || response.length == 0) {
 					res.status(404).send();
 				} else  {
-					model.candidate.update( 
+					mongoose.models.candidate.update( 
 						{ _id: req.params.candidateid }, 
 						{
 							$push: {
@@ -57,7 +56,7 @@ module.exports = function(dblayer) {
 							if (error != null) {
 								res.status(500).send(error)
 							} else {
-								model.candidate.find( { _id: req.params.candidateid }, 
+								mongoose.models.candidate.find( { _id: req.params.candidateid }, 
 									function (error, response) { 
 										res.status(201).send(req.originalUrl + `/${response[0].votes[0]._id}`);
 									});
@@ -70,16 +69,15 @@ module.exports = function(dblayer) {
 	});
 
 	router.delete('/:candidateid/votes/:id', function(req, res, next) {
-		var model = dblayer.sm.model;
-		var vote = new model.vote(req.body);
-		model.candidate.find( { _id: req.params.candidateid }, function (error, response) {
+		var vote = new mongoose.models.vote(req.body);
+		mongoose.models.candidate.find( { _id: req.params.candidateid }, function (error, response) {
 			if (error != null) {
 				res.status(500).send(error);
 			} else {
 				if (response == null || response == undefined || response.length == 0) {
 					res.status(404).send();
 				} else  {
-					model.candidate.update( 
+					mongoose.models.candidate.update( 
 						{ _id: req.params.candidateid }, 
 						{
 							$pull: {
@@ -110,8 +108,7 @@ module.exports = function(dblayer) {
 	});
 
 	function get(req, res, next, filter) {
-		var model = dblayer.sm.model;
-	 	model.candidate.find(filter, function(error, response) {
+	 	mongoose.models.candidate.find(filter, function(error, response) {
 	 		if (error != null) {
 	 			res.status(500).send(error);
 	 		} else {
@@ -125,8 +122,7 @@ module.exports = function(dblayer) {
 	 }
 
 	router.post('/', function(req, res, next) {
-		var model = dblayer.sm.model;
-		var candidate = new model.candidate(req.body);
+		var candidate = new mongoose.models.candidate(req.body);
 		candidate.save(function (error, response) {
 			if (error != null) {
 				res.status(500).send(error);
@@ -137,13 +133,12 @@ module.exports = function(dblayer) {
 	});
 
 	router.put('/:id', function(req, res, next) {
-		var model = dblayer.sm.model;
-		model.candidate.find({ _id: req.params.id}, function(error, response) {
+		mongoose.models.candidate.find({ _id: req.params.id}, function(error, response) {
 			if (error != null) {
 				res.status(500).send(error);
 			} else {
 				if (response == null || response == undefined || response.length == 0) {
-					var candidate = new model.candidate(req.body);
+					var candidate = new mongoose.models.candidate(req.body);
 					candidate.save(function (error, response) {
 						if (error != null) {
 							res.status(500).send(error);
@@ -152,7 +147,7 @@ module.exports = function(dblayer) {
 						}
 					});
 				} else {
-					model.candidate.update( { _id: req.params.id } , req.body, function (error, response) {
+					mongoose.models.candidate.update( { _id: req.params.id } , req.body, function (error, response) {
 						if (error != null) {
 							res.status(500).send(error);
 						} else {
@@ -165,15 +160,14 @@ module.exports = function(dblayer) {
 	});
 
 	router.delete('/:id', function(req, res, next) {
-		var model = dblayer.sm.model;
-		model.candidate.find({_id: req.params.id}, function (error, response) {
+		mongoose.models.candidate.find({_id: req.params.id}, function (error, response) {
 			if (error != null) {
 				res.status(500).send(error)
 			} else {
 				if (response == null || response == undefined || response.length == 0) {
 					res.status(404).send();
 				} else {
-					model.candidate.remove({_id: req.params.id }, function(error) {
+					mongoose.models.candidate.remove({_id: req.params.id }, function(error) {
 						if (error != null) {
 							res.status(500).send(error);
 						} else {

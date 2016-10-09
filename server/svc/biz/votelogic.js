@@ -1,4 +1,6 @@
-module.exports = function(dblayer) {
+var mongoose = require('mongoose');
+
+module.exports = function() {
 
 	var logic = {}
 
@@ -14,12 +16,11 @@ module.exports = function(dblayer) {
 	}
 
 	logic.expireVotes = function() {
-		var model = dblayer.sm.model;
 		var sd = new Date();
 		var ed = new Date();
 		sd.setMinutes(sd.getMinutes() - 10);
 		ed.setMinutes(ed.getMinutes() + 10);
-		model.vote.find( {
+		mongoose.models.vote.find( {
 			enddate: {
 				$gte: sd,
 				$lte: ed

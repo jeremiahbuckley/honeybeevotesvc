@@ -108,11 +108,11 @@ frisby.create('POST candidate')
                     ]
                   }])
                 .afterJSON (function (json) {
-                    frisby.create('DELETE candidates')
-                      .delete(tc.url + '/candidates/' + json[0]._id)
-                      .inspectBody()
-                      .expectStatus(200)
-                      .toss();
+                    // frisby.create('DELETE candidates')
+                    //   .delete(tc.url + '/candidates/' + json[0]._id)
+                    //   .inspectBody()
+                    //   .expectStatus(200)
+                    //   .toss();
                     })
                 .toss();
           })
