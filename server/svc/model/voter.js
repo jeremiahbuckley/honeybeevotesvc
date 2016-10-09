@@ -2,7 +2,10 @@ var mongoose = require('mongoose');
 
 function makeSchema() {
 	return mongoose.Schema({
-		name: String
+		name: {
+			type: String,
+			required: true
+		}
 	});
 }
 

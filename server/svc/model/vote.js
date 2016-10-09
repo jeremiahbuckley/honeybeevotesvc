@@ -1,13 +1,30 @@
 var mongoose = require('mongoose');
 
 function makeSchema() {
-	return mongoose.Schema({
-		voter_id: Number,
-		value: Number,
-		expired: Boolean,
-		starttime: Date,
-		endtime: Date
+	var schema = mongoose.Schema({
+		voter_id: { 
+			type: Number,
+			required: true
+		},
+		value: {
+			type: Number,
+			required: true
+		},
+		expired: {
+			type: Boolean,
+			required: true
+		},
+		starttime: {
+			type: Date,
+			required: true
+		},
+		endtime: {
+			type: Date,
+			required: true
+		}
 	});
+
+	return schema;
 }
 
 function makeModel(db, schema) {

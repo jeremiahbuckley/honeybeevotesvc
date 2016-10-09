@@ -10,6 +10,8 @@ var mongoose = require('mongoose');
 var utils = require('./utils');
 
 var dblayer = require('./model');
+var app = express();
+
 
 var port = 8000;
 
@@ -18,7 +20,6 @@ var voters = require('./routes/voters');
 var candidates = require('./routes/candidates');
 var elections = require('./routes/elections');
 
-var app = express();
 console.log(app.get('env'));
 app.set('env', 'development');
 console.log(app.get('env'));

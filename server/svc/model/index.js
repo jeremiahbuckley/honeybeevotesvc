@@ -3,6 +3,7 @@ var configdb = require('../config/db');
 var fs = require('fs');
 var path = require('path');
 
+
 mongoose.connect(configdb.url);
 var db = mongoose.connection;
 
@@ -35,11 +36,10 @@ db.once('open', function() {
 	//console.log(JSON.stringify(sm));
 
 	console.log('finished require!');
+
 });
-
-
 
 module.exports = { 
 	db: db,
-	sm: sm 
+	sm: sm
 }

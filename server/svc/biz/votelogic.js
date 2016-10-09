@@ -37,15 +37,20 @@ module.exports = function(dblayer) {
 			expireTime = new Date();
 		}
 		vote.expired = false;
-		
+
 		if (vote.endtime.getTime() < expireTime.getTime()) {
 			vote.expired = true;
 		}
 	}
 
-	logic.setVoteEnddate = function(vote) {
+	logic.setVoteEndtime = function(vote) {
 		vote.endtime = new Date(vote.starttime.getTime());
 		vote.endtime.setMinutes(vote.endtime.getMinutes() + vote.value);
+	}
+
+	logic.setEndtimeAndExpired = function(vote) {
+		this.setVoteEndtime(vote);
+		this.checkAndExpireVote(vote);
 	}
 
 	return logic;

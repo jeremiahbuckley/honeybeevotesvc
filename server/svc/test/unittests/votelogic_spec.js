@@ -1,13 +1,21 @@
 var assert = require('assert');
-var dbmodel = require('../../model');
 var bzVote = require('../../biz/votelogic.js');
+var dbmodel = require('../../model');
+
+console.log('hi');
 
 var bizVote = bzVote(null);
+console.log('hi2');
 
 describe('votelogic', function() {
   describe('setVoteEnddate', function() {
     it('should set an enddate (uses the math startime+value)', function() {
+console.log('hi again');
+    	console.log('here we go')
+    	console.log(dbmodel);
     	var model = dbmodel.sm.model;
+    	console.log(dbmodel);
+    	console.log(model);
     	var start = new Date();
     	var val = 10;
     	var vote = new model.vote( { value: val, starttime: start } );
@@ -15,7 +23,7 @@ describe('votelogic', function() {
     	// this assumes the expire function is starttime+value
     	var end = new Date(start.getTime());
     	end.setMinutes(end.getMinutes() + val);
-    	bizVote.setVoteEnddate(vote);
+    	bizVote.setVoteEndtme(vote);
 
     	assert.deepEqual(vote.endtime, end);
     });
@@ -64,3 +72,4 @@ describe('votelogic', function() {
   });
 
 });
+

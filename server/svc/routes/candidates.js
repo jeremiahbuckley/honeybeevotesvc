@@ -2,10 +2,11 @@ var express = require('express');
 var router = express.Router();
 var MongoClient = require('mongodb').MongoClient
   , assert = require('assert');
+var bzVote = require('../biz/votelogic.js');
 
 module.exports = function(dblayer) {
 
-
+	var bizVote = bzVote(dblayer);
 
 	router.get('/:candidateid/votes', function(req, res, next) {
 		getVote(req, res, next, { _id: req.params.candidateid });
@@ -33,6 +34,9 @@ module.exports = function(dblayer) {
 	router.post('/:candidateid/votes', function(req, res, next) {
 		var model = dblayer.sm.model;
 		var vote = new model.vote(req.body);
+		console.log(vote);
+		bizVote.setEndtimeAndExpired(vote);
+		console.log(vote);
 		model.candidate.find( { _id: req.params.candidateid }, function (error, response) {
 			if (error != null) {
 				res.status(500).send(error);
@@ -45,7 +49,7 @@ module.exports = function(dblayer) {
 						{
 							$push: {
 								votes : {
-									$each: [ req.body ]
+									$each: [ vote ]
 								}
 							}
 						},
