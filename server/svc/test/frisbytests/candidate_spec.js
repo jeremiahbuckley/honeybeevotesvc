@@ -59,6 +59,7 @@ frisby.create('POST candidate')
 
 
 var NAMEv1 = 'Victor Urban'
+var VoterId = 432;
 var Candidatev1VoteId = 56
 var Candidatev1VoteValue = 8
 var Candidatev1VoteEntryDate = new Date();
@@ -80,6 +81,7 @@ frisby.create('POST candidate')
       frisby.create('POST candidate vote')
           .post(tc.url + body + '/votes',
             { 
+              'voter_id': VoterId,
               'value': Candidatev1VoteValue,
               'starttime': Candidatev1VoteEntryDate
             },
@@ -101,6 +103,7 @@ frisby.create('POST candidate')
                     'name' : NAMEv1,
                     'votes' : [ 
                       {
+                        'voter_id' : VoterId,
                         'value' : Candidatev1VoteValue,
                         'starttime' : Candidatev1VoteEntryDate.toISOString(),
                         'expired' : false
@@ -108,11 +111,11 @@ frisby.create('POST candidate')
                     ]
                   }])
                 .afterJSON (function (json) {
-                    // frisby.create('DELETE candidates')
-                    //   .delete(tc.url + '/candidates/' + json[0]._id)
-                    //   .inspectBody()
-                    //   .expectStatus(200)
-                    //   .toss();
+                    frisby.create('DELETE candidates')
+                      .delete(tc.url + '/candidates/' + json[0]._id)
+                      .inspectBody()
+                      .expectStatus(200)
+                      .toss();
                     })
                 .toss();
           })

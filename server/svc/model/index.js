@@ -27,13 +27,12 @@ fs
 .forEach(function(file) {
 
 	var x = require(path.join(__dirname, file));
-	var name = file.substring(0, file.indexOf("."));
+	// var name = file.substring(0, file.indexOf("."));
+	var name = x.name;
 
 	console.log("loading model: " + name);
-	sm.schema[name] = {};
-	sm.model[name] = {};
-	sm.schema[name] = x.makeSchema();
-	sm.model[name] = x.makeModel(db, sm.schema[name]);
+	var schema = x.makeSchema();
+	x.makeModel(db, schema);
 	console.log("loaded model: " + name);
 
 });
@@ -42,6 +41,6 @@ fs
 	console.log('finished require!');
 
 module.exports = { 
-	db: db,
-	sm: sm
+	// db: db,
+	// sm: sm
 }

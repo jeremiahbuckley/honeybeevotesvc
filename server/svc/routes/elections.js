@@ -54,7 +54,10 @@ module.exports = function() {
 						}
 					});
 				} else {
-					mongoose.models.election.update( { _id: req.params.id } , req.body, function (error, response) {
+					mongoose.models.election.update( { _id: req.params.id } , 
+						req.body, 
+						{ runValidators: true },
+						function (error, response) {
 						if (error != null) {
 							res.status(500).send(error);
 						} else {

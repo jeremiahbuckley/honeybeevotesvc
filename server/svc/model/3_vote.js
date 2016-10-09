@@ -1,5 +1,7 @@
 var mongoose = require('mongoose');
 
+var name = "vote";
+
 function makeSchema() {
 	var schema = mongoose.Schema({
 		voter_id: { 
@@ -28,10 +30,11 @@ function makeSchema() {
 }
 
 function makeModel(db, schema) {
-	return db.model('vote', schema);
+	return db.model(name, schema);
 }
 
 module.exports = {
 	makeSchema: makeSchema,
-	makeModel: makeModel
+	makeModel: makeModel,
+	name: name
 }

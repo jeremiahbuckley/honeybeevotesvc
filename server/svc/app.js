@@ -11,7 +11,9 @@ var utils = require('./utils');
 
 var dblayer = require('./model');
 var app = express();
-
+console.log(mongoose.modelSchemas.candidate);
+console.log(mongoose.modelSchemas.candidate.paths.votes);
+console.log(mongoose.modelSchemas.candidate.paths.votes.schema);
 
 var port = 8000;
 

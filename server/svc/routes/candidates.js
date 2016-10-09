@@ -52,6 +52,7 @@ module.exports = function() {
 								}
 							}
 						},
+						{ runValidators: true },
 						function (error, result) {
 							if (error != null) {
 								res.status(500).send(error)
@@ -83,7 +84,8 @@ module.exports = function() {
 							$pull: {
 								'votes': { _id: req.params.id }
 							}
-						},
+						}, 
+						{ runValidators: true },
 						function (error, result) {
 							if (error != null) {
 								res.status(500).send(error)
@@ -147,7 +149,10 @@ module.exports = function() {
 						}
 					});
 				} else {
-					mongoose.models.candidate.update( { _id: req.params.id } , req.body, function (error, response) {
+					mongoose.models.candidate.update( { _id: req.params.id } , 
+						req.body, 
+						{ runValidators: true }, 
+						function (error, response) {
 						if (error != null) {
 							res.status(500).send(error);
 						} else {
