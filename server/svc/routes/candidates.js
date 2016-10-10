@@ -3,12 +3,14 @@ var router = express.Router();
 var MongoClient = require('mongodb').MongoClient
   , assert = require('assert');
 var bzVote = require('../biz/votelogic.js');
+var bzVoter = require('../biz/voterlogic.js');
 var mongoose = require('mongoose');
 
 
 module.exports = function() {
 
 	var bizVote = bzVote();
+	var bizVoter = bzVoter();
 
 	router.get('/:candidateid/votes', function(req, res, next) {
 		getVote(req, res, next, { _id: req.params.candidateid });
@@ -34,38 +36,46 @@ module.exports = function() {
 
 	router.post('/:candidateid/votes', function(req, res, next) {
 		var vote = new mongoose.models.vote(req.body);
-		console.log(mongoose);
-		bizVote.setEndtimeAndExpired(vote);
-		mongoose.models.candidate.find( { _id: req.params.candidateid }, function (error, response) {
-			if (error != null) {
-				res.status(500).send(error);
+		bizVoter.voterCanVote(vote.voter_id, function(error, result) {
+			if (!result) {
+				rest.status(500).send('Voter cannot vote until previous vote expires');
 			} else {
-				if (response == null || response == undefined || response.length == 0) {
-					res.status(404).send();
-				} else  {
-					mongoose.models.candidate.update( 
-						{ _id: req.params.candidateid }, 
-						{
-							$push: {
-								votes : {
-									$each: [ vote ]
+
+				bizVote.setEndtimeAndExpired(vote);
+				mongoose.models.candidate.find( { _id: req.params.candidateid }, function (error, response) {
+					if (error != null) {
+						res.status(500).send(error);
+					} else {
+						if (response == null || response == undefined || response.length == 0) {
+							res.status(404).send();
+						} else  {
+							mongoose.models.candidate.update( 
+								{ _id: req.params.candidateid }, 
+								{
+									$push: {
+										votes : {
+											$each: [ vote ]
+										}
+									}
+								},
+								{ runValidators: true },
+								function (error, result) {
+									if (error != null) {
+										res.status(500).send(error)
+									} else {
+										mongoose.models.candidate.find( { _id: req.params.candidateid }, 
+											function (error, response) { 
+												res.status(201).send(req.originalUrl + `/${response[0].votes[0]._id}`);
+											});
+									}
 								}
-							}
-						},
-						{ runValidators: true },
-						function (error, result) {
-							if (error != null) {
-								res.status(500).send(error)
-							} else {
-								mongoose.models.candidate.find( { _id: req.params.candidateid }, 
-									function (error, response) { 
-										res.status(201).send(req.originalUrl + `/${response[0].votes[0]._id}`);
-									});
-							}
+							);
 						}
-					);
-				}
+					}
+				});
+
 			}
+
 		});
 	});
 

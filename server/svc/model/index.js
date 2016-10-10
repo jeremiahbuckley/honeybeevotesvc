@@ -27,7 +27,6 @@ fs
 .forEach(function(file) {
 
 	var x = require(path.join(__dirname, file));
-	// var name = file.substring(0, file.indexOf("."));
 	var name = x.name;
 
 	console.log("loading model: " + name);
@@ -36,11 +35,5 @@ fs
 	console.log("loaded model: " + name);
 
 });
-//console.log(JSON.stringify(sm));
 
-	console.log('finished require!');
-
-module.exports = { 
-	// db: db,
-	// sm: sm
-}
+console.log('finished require!');

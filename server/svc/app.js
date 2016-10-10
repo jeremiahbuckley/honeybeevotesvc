@@ -1,5 +1,5 @@
 var express = require('express');
-var multer = require('multer'); // v1.0.5
+var multer = require('multer');
 var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
@@ -11,9 +11,6 @@ var utils = require('./utils');
 
 var dblayer = require('./model');
 var app = express();
-console.log(mongoose.modelSchemas.candidate);
-console.log(mongoose.modelSchemas.candidate.paths.votes);
-console.log(mongoose.modelSchemas.candidate.paths.votes.schema);
 
 var port = 8000;
 
@@ -40,9 +37,6 @@ app.use('/', routes);
 app.use('/voters', voters());
 app.use('/candidates', candidates());
 app.use('/elections', elections());
-
-//mongoose.connect(db.url);
-
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

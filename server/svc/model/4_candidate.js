@@ -1,7 +1,5 @@
 var mongoose = require('mongoose');
 
-// var vote = require('./vote.js');
-
 var name = "candidate";
 
 function makeSchema() {
