@@ -13,7 +13,15 @@ module.exports = function(grunt) {
 		    }
 		  }
 		},		
-		nodemon: {
+	    eslint: {
+	      target: [
+	        'Gruntfile.js',
+	        'biz/*.js',
+	        'routes/*.js',
+	        'tests/**/*.js'
+	      ]
+	    },
+   		nodemon: {
 		  dev: {
 		    script: './bin/www',//'index.js',
 		    options: {
@@ -53,8 +61,10 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-nodemon');
 	grunt.loadNpmTasks('grunt-contrib-watch');
 	grunt.loadNpmTasks('grunt-babel');
+	grunt.loadNpmTasks('grunt-eslint');
 
 	// Default task(s).
+	grunt.registerTask('lint', ['eslint']);
 	grunt.registerTask('default', ['babel', 'nodemon']);
 	grunt.registerTask('basic', ['nodemon']);
 
