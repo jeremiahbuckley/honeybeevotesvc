@@ -20,6 +20,7 @@ describe('voterlogic', function() {
 		console.log('before');
 		var c = new mongoose.models.candidate(  {
 	    	"name": "Dee Ellis",
+	    	"value": 0,
 	    	"votes": [
 		      {
 	        	"starttime": "2016-10-09T20:54:19.797Z",

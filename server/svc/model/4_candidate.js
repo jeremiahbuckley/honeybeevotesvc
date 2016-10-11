@@ -8,6 +8,10 @@ function makeSchema() {
 			type: String,
 			required: true
 		},
+		value: {
+			type: Number, 
+			required: true
+		},
 		votes: [mongoose.model('vote').schema]
 	});
 }

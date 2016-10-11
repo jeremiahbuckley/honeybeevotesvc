@@ -10,7 +10,8 @@ var NAME2 = 'Xander Wiggens';
 frisby.create('POST candidate')
     .post(tc.url + '/candidates',
       { 
-        'name': NAME
+        'name': NAME,
+        'value': 0
       },
       { json: true },
       { headers: { 'Content-Type': 'application/json' }})
@@ -68,7 +69,8 @@ var Candidatev1VoteEntryDate = new Date();
 frisby.create('POST candidate')
     .post(tc.url + '/candidates',
       { 
-        'name': NAMEv1
+        'name': NAMEv1,
+        'value': 0
       },
       { json: true },
       { headers: { 'Content-Type': 'application/json' }})

@@ -4,12 +4,19 @@ module.exports = function() {
 
 	var logic = {}
 
-	logic.voteValue = function(vote) {
+	logic.voteValue = function(vote, now) {
+		if (now == undefined) {
+			now = new Date();
+		}
 		var d = new Date(vote.starttime);
-		var now = new Date();
+		console.log("   " + d.toString());
+		console.log("   " + now.toString());
 		now.setMinutes(now.getMinutes() + 10);
-		if (now.getTime() - d.getTime() > 0) {
-			return vote.value * (now.getMinutes() - d.getMinutes())
+		var difference = now.getTime() - d.getTime();
+		if (difference > 0) {
+			//console.log(Math.round(difference/60000));
+			//return vote.value * Math.round(difference / 60000); // 60000ms == 60s == 1m
+			return vote.value;
 		} else {
 			return 0;
 		}

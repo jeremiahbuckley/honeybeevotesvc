@@ -6,7 +6,7 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
-
+var calctimer = require('./biz/calculatetimer.js');
 var utils = require('./utils');
 
 var dblayer = require('./model');
@@ -37,6 +37,9 @@ app.use('/', routes);
 app.use('/voters', voters());
 app.use('/candidates', candidates());
 app.use('/elections', elections());
+
+var calculatetimer = new calctimer();
+calculatetimer.startCalcInterval();
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
