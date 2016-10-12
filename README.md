@@ -9,6 +9,18 @@
   1.	It is possible that the value #2 determines influence sustaining duration, but that is not the same as the valuation of #4. (E.g. The value of #4 is simply the number of voters, not the voters*#2 valuation).
 5.	If #4 is just # of voters, look to book honeybee democracy to determine % of voting body required to be a winner.
 
+## Frameworks and Tools:
+- Mongo db
+- Node
+- Express
+- Mongoose
+- Mocha
+- Jasmine
+- Frisby
+- ESLint
+- Grunt
+
+
 ## Features for voters
 ### V1
 1.	Know what we are voting for.
