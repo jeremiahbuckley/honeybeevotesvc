@@ -34,8 +34,8 @@ module.exports = function() {
 			}
 		}, function (error, result) {
 			var now = new Date();
-			result.forEach( function (current, index, array) {
-				checkAndExpireVote(current, now);
+			result.forEach( function (current) {
+				logic.checkAndExpireVote(current, now);
 			})
 		})
 	}

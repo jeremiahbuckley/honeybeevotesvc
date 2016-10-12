@@ -1,4 +1,5 @@
 extends: "eslint:recommended"
 env:
-	browser: true
-	node: true
+  node: true
+  browser: true
+  es6: true

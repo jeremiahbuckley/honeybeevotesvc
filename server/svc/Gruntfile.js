@@ -6,46 +6,48 @@ module.exports = function(grunt) {
 	// Project configuration.
 	grunt.initConfig({
 		concurrent: {
-		  dev: {
-		    tasks: ['nodemon', 'watch'], //'node-inspector', 'watch'], <-- node-inspector, a debugger, don't need yet
-		    options: {
-		      logConcurrentOutput: true
-		    }
-		  }
+			dev: {
+				tasks: ['nodemon', 'watch'], //'node-inspector', 'watch'], <-- node-inspector, a debugger, don't need yet
+				options: {
+					logConcurrentOutput: true
+				}
+			}
 		},		
-	    eslint: {
-	      target: [
-	        'Gruntfile.js',
-	        'biz/*.js',
-	        'routes/*.js',
-	        'tests/**/*.js'
-	      ]
-	    },
-   		nodemon: {
-		  dev: {
-		    script: './bin/www',//'index.js',
-		    options: {
-		      ignore: ['node_modules/**']//,
-		    }
-		  }
+		eslint: {
+			target: [
+				'Gruntfile.js',
+				'biz/*.js',
+				'confit/*.js',
+				'model/*.js',
+				'routes/*.js',
+				'tests/**/*.js'
+			]
 		},
-	 	pkg: grunt.file.readJSON('package.json'),
-	 	babel: {
-        	options: {
-            	sourceMap: true,
-	            presets: ['es2015']
-    	    },
-    files: {
-        expand: true,
-        src: ['**/*.es6'],
-        ext: '-compiled.js'
-    }    	    ,
-        	dist: {
-            	files: {
-                	'dist/app.js': 'src/app.js'
-	            }
-    	    }
-	    }
+		nodemon: {
+			dev: {
+				script: './bin/www',//'index.js',
+				options: {
+					ignore: ['node_modules/**']//,
+				}
+			}
+		},
+		pkg: grunt.file.readJSON('package.json'),
+		babel: {
+			options: {
+				sourceMap: true,
+				presets: ['es2015']
+			},
+			files: {
+				expand: true,
+				src: ['**/*.es6'],
+				ext: '-compiled.js'
+			},
+			dist: {
+				files: {
+					'dist/app.js': 'src/app.js'
+				}
+			}
+		}
 //	  uglify: {
 //	    options: {
 //	      banner: '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd") %> */\n'

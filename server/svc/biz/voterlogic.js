@@ -1,4 +1,3 @@
-var MongoClient = require('mongodb').MongoClient;
 var mongoose = require('mongoose');
 
 module.exports = function() {

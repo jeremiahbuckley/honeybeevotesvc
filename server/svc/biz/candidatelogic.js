@@ -21,7 +21,7 @@ module.exports = function() {
 				var value = 0.0;
 				try {
 					if (result != null) {
-						result.votes.forEach( function(current, index, array) {
+						result.votes.forEach( function(current) {
 							console.log(current.starttime.toString());
 							console.log(datetime.toString());
 							var vval = bizVote.voteValue(current, datetime);
@@ -51,7 +51,7 @@ module.exports = function() {
 									mongoose.models.candidate.findOneAndUpdate( { name: item.name }, 
 										{ value: result }, 
 										{},
-										function (error, result) {
+										function (error) {
 											if (error) {
 												cb(error);
 											} else {

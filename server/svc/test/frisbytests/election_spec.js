@@ -42,7 +42,6 @@ frisby.create('POST election')
                     'name': NAME2
                   }])
                 .afterJSON ( function (json) {
-
                   frisby.create('DELETE elections')
                       .delete(tc.url + '/elections/' + json[0]._id)
                       .inspectBody()
