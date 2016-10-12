@@ -45,7 +45,7 @@ module.exports = function() {
 				if (response == null || response == undefined || response.length == 0) {
 					res.status(404).send();
 				} else {
-					mongoose.models.voter.remove({ _id: req.params.id }, function(error, response) {
+					mongoose.models.voter.remove({ _id: req.params.id }, function(error) {
 						if (error != null) {
 							res.status(500).send(error);
 						} else {

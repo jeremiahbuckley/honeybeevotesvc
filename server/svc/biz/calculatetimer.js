@@ -15,9 +15,9 @@ module.exports = function() {
 	};
 
 	x.recalc = function() {
-		console.log("starting recalc");
+		console.warn("starting recalc");
 		bizVote.expireVotes();
-		bizCandidate.recalcAllCandidates(function(err) { if (err) { console.log(err)}});
+		bizCandidate.recalcAllCandidates(function(err) { if (err) { console.error(err)}});
 	}
 
 	return x;

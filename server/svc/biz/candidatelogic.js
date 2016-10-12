@@ -22,8 +22,6 @@ module.exports = function() {
 				try {
 					if (result != null) {
 						result.votes.forEach( function(current) {
-							console.log(current.starttime.toString());
-							console.log(datetime.toString());
 							var vval = bizVote.voteValue(current, datetime);
 							value = value + vval;
 						});

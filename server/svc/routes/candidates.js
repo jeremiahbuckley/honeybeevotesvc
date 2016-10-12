@@ -93,7 +93,7 @@ module.exports = function() {
 							}
 						}, 
 						{ runValidators: true },
-						function (error, result) {
+						function (error) {
 							if (error != null) {
 								res.status(500).send(error)
 							} else {
@@ -179,7 +179,7 @@ module.exports = function() {
 				if (response == null || response == undefined || response.length == 0) {
 					res.status(404).send();
 				} else {
-					mongoose.models.candidate.remove({_id: req.params.id }, function(error, response) {
+					mongoose.models.candidate.remove({_id: req.params.id }, function(error) {
 						if (error != null) {
 							res.status(500).send(error);
 						} else {

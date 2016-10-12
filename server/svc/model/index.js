@@ -11,7 +11,7 @@ var sm = {};
 	
 db.on('error', console.error);
 db.once('open', function() {
-	console.log('connection open!');
+	console.warn('connection open!');
 
 
 });
@@ -29,11 +29,11 @@ fs
 	var x = require(path.join(__dirname, file));
 	var name = x.name;
 
-	console.log("loading model: " + name);
+	console.warn("loading model: " + name);
 	var schema = x.makeSchema();
 	x.makeModel(db, schema);
-	console.log("loaded model: " + name);
+	console.warn("loaded model: " + name);
 
 });
 
-console.log('finished require!');
+console.warn('finished require!');
