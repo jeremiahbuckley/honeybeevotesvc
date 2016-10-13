@@ -11,15 +11,15 @@
 
 ## Frameworks and Tools:
 - Mongo db
+- Mongoose
 - Node
 - Express
-- Mongoose
 - Mocha
 - Jasmine
 - Frisby
 - ESLint
 - Grunt
-
+- Passport
 
 ## Features for voters
 ### V1
