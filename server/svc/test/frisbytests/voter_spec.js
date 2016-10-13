@@ -4,11 +4,13 @@ var tc = require('../config/test_config');
 var dbConfig = require('../config/db');
 
 var NAME = 'Aaron Beagel';
+var PWD = 'foo';
 
 frisby.create('POST voter')
     .post(tc.url + '/voters',
       { 
-        'name': NAME
+        'name': NAME,
+        'password': PWD
       },
       { json: true },
       { headers: { 'Content-Type': 'application/json' }})
@@ -25,7 +27,8 @@ frisby.create('POST voter')
           .expectHeader('Content-Type', 'application/json; charset=utf-8')
           .expectJSON(
             [{ 
-              'name': NAME
+              'name': NAME,
+              'password': PWD
             }])
           .afterJSON( function(json) {
 

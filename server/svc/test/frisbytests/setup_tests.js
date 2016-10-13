@@ -3,6 +3,9 @@ var frisby = require('frisby');
 var tc = require('../config/test_config');
 var dbConfig = require('../config/db');
 var async = require('async');
+// var mongoose = require('mongoose');
+// var dblayer = require('../../model');
+
 
 var MongoClient = require('mongodb').MongoClient
   , assert = require('assert');
@@ -40,15 +43,12 @@ function dropElectionCollection(callback) {
         election.drop(function(err, reply) {
             if (err) {
                 console.log(err);
-            }
-            if (reply) {
-                console.log('elections collection dropped');
             } else {
-                console.log('had some trouble dropping elections collection')
-            }
-            var ne = reader_test_db.collection('elections');
-            if (ne != undefined) {
-                console.log('elections is still here!');
+                if (reply) {
+                    console.log('elections collection dropped');
+                } else {
+                    console.log('had some trouble dropping elections collection')
+                }
             }
             callback(0);
         });
@@ -73,8 +73,59 @@ function dropCandidateCollection(callback) {
     }
 }
 
-function closeDB(callback) {
-    reader_test_db.close();
+function addVoters(callback) {
+    console.log("add test voters");
+
+    // var voter;
+    // voter = new mongoose.models.voter( { name: "Aaron Burr", password: "Invincible1" });
+    // voter.save(function(error, response) {
+    //     if (error) {
+    //         console.log(error);
+    //     } else {
+    //         console.log("first ok");
+    //         voter = new mongoose.models.voter( { name: "Charlotte Dorothy", password: "Invincible1" });
+    //         voter.save(function(error, response) {
+    //             if (error) {
+    //                 console.log(error);
+    //             } else {
+    //                 console.log("second ok");
+    //                 return callback(0);
+    //             }
+    //         });
+    //     }
+    // });
+
+    voter = reader_test_db.collection('voters');
+    if (undefined == voter) {
+        console.error('unable to create basic voters');
+        return callback(0);
+    } else {
+        try {
+            voter.insertMany( [
+                {
+                    name: "Aaron Burr",
+                    password: "Invincible1"
+                },
+                {
+                    name: "Charlotte Dorothy",
+                    password: "Invincible1"
+                }
+            ]);
+            return callback(0);
+        } catch (err) {
+            console.error(err);
+            return callback(0);
+        }
+    }
+
 }
 
-async.series([connectDB, dropVoterCollection, dropCandidateCollection, dropElectionCollection, closeDB]);
+function closeDB(callback) {
+    console.log("closing db");
+    reader_test_db.close(function(error, result) {
+        return callback(0);
+    });
+    return callback(0);
+}
+
+async.series([connectDB, dropVoterCollection, dropCandidateCollection, dropElectionCollection, addVoters, closeDB]);
