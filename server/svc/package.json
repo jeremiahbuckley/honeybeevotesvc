@@ -30,6 +30,7 @@
     "grunt-contrib-watch": "^1.0.0",
     "grunt-eslint": "^19.0.0",
     "grunt-nodemon": "^0.4.2",
-    "mocha": "^3.1.0"
+    "mocha": "^3.1.0",
+    "node-inspector": "^0.12.8"
   }
 }

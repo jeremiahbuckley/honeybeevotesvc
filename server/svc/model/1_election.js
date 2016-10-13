@@ -7,7 +7,9 @@ function makeSchema() {
 		name: {
 			type: String,
 			required: true
-		}
+		},
+		candidateIds: [Number],
+		voterIds: [Number]
 	});
 }
 

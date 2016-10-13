@@ -26,6 +26,14 @@ module.exports = function() {
 		});
 	}
 
+	router.post('/:id/candidateid/:candidateid', function(req, res) {
+		pushPullElectionParticipantIds(req, res, req.params.id, req.params.candidateid, true, true);
+	});
+
+	router.post('/:id/voterid/:voterid', function(req, res) {
+		pushPullElectionParticipantIds(req, res, req.params.id, req.params.voterid, true, false);
+	});
+
 	router.post('/', function(req, res) {
 		var election = new mongoose.models.election(req.body);
 		election.save(function (error, response) {
@@ -67,6 +75,14 @@ module.exports = function() {
 		});
 	});
 
+	router.delete('/:id/candidateid/:candidateid', function(req, res) {
+		pushPullElectionParticipantIds(req, res, req.params.id, req.params.candidateid, false, true);
+	});
+
+	router.delete('/:id/voterid/:voterid', function(req, res) {
+		pushPullElectionParticipantIds(req, res, req.params.id, req.params.voterid, false, false);
+	});
+
 	router.delete('/:id', function(req, res) {
 		mongoose.models.election.find({ _id: req.params.id}, function (error, response) {
 			if (error != null) {
@@ -86,6 +102,45 @@ module.exports = function() {
 			}
 		})
 	});
+
+	function pushPullElectionParticipantIds( req, res, electionId, participantId, isPush, isCandidateId) {
+		var update = {};
+		var verb = "";
+		var participantType = "";
+		if (isPush) {
+			verb = "$push";
+		} else {
+			verb = "$pull"
+		}
+		update[verb] = {}
+		if (isCandidateId) {
+			participantType = "candidateIds";
+		} else {
+			participantType = "voterIds";
+		}
+		update[verb][participantType] = participantId;
+
+		mongoose.models.election.findOne({ _id: electionId}, function(error, response) {
+			if (error != null) {
+				res.status(500).send(error);
+			} else {
+				if (response == null || response == undefined || response.length == 0) {
+					res.status(500).send("Election " + electionId + " does not exist.");
+				} else {
+					mongoose.models.election.update( { _id: response._id } , 
+						update, 
+						{ runValidators: true },
+						function (error) {
+						if (error != null) {
+							res.status(500).send(error);
+						} else {
+							res.status(200).send(req.originalUrl);
+						}
+					});
+				}
+			}
+		});
+	}
 
 	return router;
 }

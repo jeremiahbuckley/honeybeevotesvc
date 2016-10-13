@@ -23,6 +23,13 @@ module.exports = function(grunt) {
 				'tests/**/*.js'
 			]
 		},
+		'node-inspector': {
+			custom: {
+				options: {
+					// 'web-port' : 1667
+				}
+			}
+		},
 		nodemon: {
 			dev: {
 				script: './bin/www',//'index.js',
@@ -64,6 +71,7 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-contrib-watch');
 	grunt.loadNpmTasks('grunt-babel');
 	grunt.loadNpmTasks('grunt-eslint');
+	grunt.loadNpmTasks('grunt-node-inspector');
 
 	// Default task(s).
 	grunt.registerTask('lint', ['eslint']);
