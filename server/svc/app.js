@@ -8,6 +8,9 @@ var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
 var calctimer = require('./biz/calculatetimer.js');
 var utils = require('./utils');
+var passport = require('passport');
+var Strategy = require('passport-http').BasicStrategy;
+var authentication = require('./biz/authentication.js');
 
 var dblayer = require('./model');
 var app = express();
@@ -33,10 +36,25 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(utils.requestTime);
 
+
+// Configure the Basic strategy for use by Passport.
+//
+// The Basic strategy requires a `verify` function which receives the
+// credentials (`username` and `password`) contained in the request.  The
+// function must verify that the password is correct and then invoke `cb` with
+// a user object, which will be set at `req.user` in route handlers after
+// authentication.
+passport.use(new Strategy(authentication.auth));
+
 app.use('/', routes);
 app.use('/voters', voters());
 app.use('/candidates', candidates());
 app.use('/elections', elections());
+app.get('/users',
+  passport.authenticate('basic', { session: false }),
+  function(req, res) {
+    res.json({ id: req.user.id, username: req.user.username });
+  });
 
 var calculatetimer = new calctimer();
 calculatetimer.startCalcInterval();
