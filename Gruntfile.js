@@ -32,7 +32,7 @@ module.exports = function(grunt) {
 		},
 		nodemon: {
 			dev: {
-				script: './bin/www',//'index.js',
+				script: './app.js',//'./bin/www',//'index.js',
 				options: {
 					ignore: ['node_modules/**']//,
 				}
