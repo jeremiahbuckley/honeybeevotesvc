@@ -44,6 +44,8 @@
 - node-inspector debugging seems to be broken, a fix they're screaming about on node-inspector forums.
 - I think .app.js works fine, but the original Express bootstrapping program has things running through ./biz/www, which also works fine. Obviously need to get rid of ./bin/www if it's not adding anything.
 
+- Docker: You can containerize this app using 'docker build .' Once built, you can run the container with something like 'docker run -e MONGO_URL=mongodb://192.168.0.128:27017/honeybeevote -d -p 8000:8000 honeybeevotesvc' where MONGO_URL points to your mongo server.
+
 
 ## Features for voters
 ### V1
