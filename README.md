@@ -32,6 +32,7 @@
 - Mocha: if you do not have mocha installed locally, use this: 
    - if you have mocha installed globally, this will probably work: mocha ./test/unittests/
    - if you don't have global install, this will work: node ./node_modules/mocha/bin/mocha ./test/unittests/
+   - you can also run mocha from grunt using 'grunt mochaTest'
 - ESLint: to run lint, use this: grunt lint
 - Grunt: I don't know half of what's in here, really, just following recipes.
 	I know: eslint, nodemon, concurrent

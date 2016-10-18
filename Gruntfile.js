@@ -23,6 +23,11 @@ module.exports = function(grunt) {
 				'tests/**/*.js'
 			]
 		},
+        mochaTest: {
+            test: {
+                src: ['test/unittests/*.js']
+            }
+        },
 		'node-inspector': {
 			custom: {
 				options: {
@@ -72,6 +77,7 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-babel');
 	grunt.loadNpmTasks('grunt-eslint');
 	grunt.loadNpmTasks('grunt-node-inspector');
+    grunt.loadNpmTasks('grunt-mocha-test');
 
 	// Default task(s).
 	grunt.registerTask('lint', ['eslint']);
