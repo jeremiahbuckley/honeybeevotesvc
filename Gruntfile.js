@@ -51,7 +51,7 @@ module.exports = function(grunt) {
 			},
 			dist: {
 				files: {
-					'dist/app.js': 'src/app.js'
+					'dist/app.js': 'app.js'
 				}
 			}
 		}
