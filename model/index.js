@@ -2,9 +2,16 @@ var mongoose = require('mongoose');
 var configdb = require('../config/db');
 var fs = require('fs');
 var path = require('path');
+var mongourl = '';
 
+if (process.env.MONGO_URL) {
+    mongourl = process.env.MONGO_URL;
+}
+else {
+    mongourl = configdb.url;
+}
 
-mongoose.connect(configdb.url);
+mongoose.connect(mongourl);
 var db = mongoose.connection;
 
 var sm = {};
