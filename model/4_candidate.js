@@ -3,7 +3,7 @@ var mongoose = require('mongoose');
 var name = "candidate";
 
 function makeSchema() {
-	return mongoose.Schema({
+	var schema = mongoose.Schema({
 		name: { 
 			type: String,
 			required: true
@@ -14,6 +14,23 @@ function makeSchema() {
 		},
 		votes: [mongoose.model('vote').schema]
 	});
+    schema.virtual('links').get(function () {
+        /* TODO: These should be absolute URIs */
+        return [
+            {
+                "rel": "self",
+                "href": "/candidates/" + this._id
+            },
+            {
+                "rel": "votes",
+                "href": "/candidates/" + this._id + "/votes"
+            },
+        ];
+    });
+    schema.set('toJSON', {
+        virtuals: true
+    });
+    return schema;
 }
 
 function makeModel(db, schema) {
