@@ -11,22 +11,22 @@ module.exports = function() {
 	var bizVoter = bzVoter();
 
 	router.get('/:candidateid/votes', function(req, res) {
-		getVote(req, res, null, { _id: req.params.candidateid });
+		getVotes(req, res, null, { _id: req.params.candidateid });
 	});
 
 	router.get('/:candidateid/votes/:id', function(req, res) {
-		getVote(req, res, null, { _id: req.params.candidateid, votes: { $elemMatch: { _id : req.params.id }}});
+		getVotes(req, res, null, { _id: req.params.candidateid, votes: { $elemMatch: { _id : req.params.id }}});
 	});
 
-	function getVote(req, res, next, filter) {
-		mongoose.models.candidate.find(filter, function(error, response) {
+	function getVotes(req, res, next, filter) {
+		mongoose.models.candidate.find(filter, function(error, candidates) {
 			if (error != null) {
 				res.status(500).send(error);
 			} else {
-				if (response == null || response == undefined || response.length == 0) {
-					res.status(404).send();
-				} else {
-					res.status(200).send(response)
+                if (candidates == null || candidates == undefined || candidates.length == 0) {
+                    res.status(404).send();
+                } else {
+                    res.status(200).send(candidates[0].votes)
 				}
 			}
 		});
