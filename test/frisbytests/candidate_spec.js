@@ -64,6 +64,7 @@ var VoterId = 432;
 var Candidatev1VoteId = 56
 var Candidatev1VoteValue = 8
 var Candidatev1VoteEntryDate = new Date();
+var candidate_url;
 
 // vote CRUD
 frisby.create('POST candidate')
@@ -79,6 +80,8 @@ frisby.create('POST candidate')
     .expectHeader('Content-Type', 'text/html; charset=utf-8')
     .expectBodyContains('/candidates/')
     .after( function (error, response, body) {
+
+      candidate_url = body;
 
       frisby.create('POST candidate vote')
           .post(tc.url + body + '/votes',
@@ -101,20 +104,15 @@ frisby.create('POST candidate')
                 .expectStatus(200)
                 .expectHeader('Content-Type', 'application/json; charset=utf-8')
                 .expectJSON(
-                  [{ 
-                    'name' : NAMEv1,
-                    'votes' : [ 
-                      {
-                        'voter_id' : VoterId,
-                        'value' : Candidatev1VoteValue,
-                        'starttime' : Candidatev1VoteEntryDate.toISOString(),
-                        'expired' : false
-                      }
-                    ]
+                  [{
+                    'voter_id' : VoterId,
+                    'value' : Candidatev1VoteValue,
+                    'starttime' : Candidatev1VoteEntryDate.toISOString(),
+                    'expired' : false
                   }])
                 .afterJSON (function (json) {
                     frisby.create('DELETE candidates')
-                      .delete(tc.url + '/candidates/' + json[0]._id)
+                      .delete(tc.url + candidate_url)
                       .inspectBody()
                       .expectStatus(200)
                       .toss();
