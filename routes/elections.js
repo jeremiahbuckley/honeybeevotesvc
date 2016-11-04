@@ -5,15 +5,15 @@ var mongoose = require('mongoose');
 module.exports = function() {
 
 	router.get('/', function(req, res) {
-		get(req, res);
+		mongoose.models.election.find(null, returnGet(req, res))
 	});
 
 	router.get('/:id', function(req, res) {
-		get(req, res, null, { _id: req.params.id });
+		mongoose.models.election.findOne({ _id: req.params.id }, returnGet(req, res));
 	});
 
-	function get(req, res, next, filter) {
-		mongoose.models.election.find(filter, function(error, response) {
+	function returnGet (req, res) {
+		return function (error, response) {
 			if (error != null) {
 				res.status(500).send(error);
 			} else {
@@ -23,7 +23,7 @@ module.exports = function() {
 					res.status(200).send(response)
 				}
 			}
-		});
+		} 
 	}
 
 	router.post('/:id/candidateid/:candidateid', function(req, res) {

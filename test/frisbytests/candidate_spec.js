@@ -40,13 +40,13 @@ frisby.create('POST candidate')
                 .expectStatus(200)
                 .expectHeader('Content-Type', 'application/json; charset=utf-8')
                 .expectJSON(
-                  [{ 
+                  { 
                     'name': NAME2
-                  }])
+                  })
                 .afterJSON ( function (json) {
 
                   frisby.create('DELETE candidates')
-                      .delete(tc.url + '/candidates/' + json[0]._id)
+                      .delete(tc.url + '/candidates/' + json._id)
                       .inspectBody()
                       .expectStatus(200)
                       .toss();
@@ -64,7 +64,8 @@ var VoterId = 432;
 var Candidatev1VoteId = 56
 var Candidatev1VoteValue = 8
 var Candidatev1VoteEntryDate = new Date();
-
+var candidate_url;
+  
 // vote CRUD
 frisby.create('POST candidate')
     .post(tc.url + '/candidates',
@@ -80,7 +81,9 @@ frisby.create('POST candidate')
     .expectBodyContains('/candidates/')
     .after( function (error, response, body) {
 
-      frisby.create('POST candidate vote')
+        candidate_url = body;
+
+        frisby.create('POST candidate vote')
           .post(tc.url + body + '/votes',
             { 
               'voter_id': VoterId,
@@ -111,9 +114,9 @@ frisby.create('POST candidate')
                   ])
                 .afterJSON (function (json) {
                     frisby.create('DELETE candidates')
-                      .delete(tc.url + '/candidates/' + json[0]._id)
+                      .delete(tc.url + candidate_url)
                       .inspectBody()
-                      /*.expectStatus(200) This could be a 404 */
+                      .expectStatus(200)
                       .toss();
                     })
                 .toss();

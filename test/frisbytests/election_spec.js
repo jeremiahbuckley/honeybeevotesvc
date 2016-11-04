@@ -38,12 +38,12 @@ frisby.create('POST election')
                 .expectStatus(200)
                 .expectHeader('Content-Type', 'application/json; charset=utf-8')
                 .expectJSON(
-                  [{ 
+                  { 
                     'name': NAME2
-                  }])
+                  })
                 .afterJSON ( function (json) {
                   frisby.create('DELETE elections')
-                      .delete(tc.url + '/elections/' + json[0]._id)
+                      .delete(tc.url + '/elections/' + json._id)
                       .inspectBody()
                       .expectStatus(200)
                       .toss();
@@ -79,16 +79,16 @@ frisby.create('POST election')
           .expectBodyContains('/elections/')
           .after( function(error, response, body) {
 
-            frisby.create('GET elections')
+            frisby.create('GET elections with candidates')
                 .get(tc.url + electionIdUrl2)
                 .inspectBody()
                 .expectStatus(200)
                 .expectHeader('Content-Type', 'application/json; charset=utf-8')
                 .expectJSON(
-                  [{ 
+                  { 
                     'name': NAME,
                     'candidateIds': [ candidateId ]
-                  }])
+                  })
                 .afterJSON ( function (json) {
                   frisby.create('DELETE elections')
                       .delete(tc.url + electionIdUrl2)
@@ -133,10 +133,10 @@ frisby.create('POST election')
                 .expectStatus(200)
                 .expectHeader('Content-Type', 'application/json; charset=utf-8')
                 .expectJSON(
-                  [{ 
+                  { 
                     'name': NAME,
                     'voterIds': [ voterId ]
-                  }])
+                  })
                 .afterJSON ( function (json) {
                   frisby.create('DELETE elections')
                       .delete(tc.url + electionIdUrl)
