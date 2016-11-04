@@ -34,7 +34,7 @@ module.exports = function() {
 
 	router.post('/:candidateid/votes', function(req, res) {
 		var vote = new mongoose.models.vote(req.body);
-		bizVoter.voterCanVote(vote.voter_id, function(error, result) {
+		bizVoter.voterCanVote(vote.voterId, function(error, result) {
 			if (!result) {
 				res.status(500).send('Voter cannot vote until previous vote expires');
 			} else {

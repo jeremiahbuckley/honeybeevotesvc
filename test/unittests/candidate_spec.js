@@ -9,9 +9,9 @@ var bizCandidate = new bzCandidate();
 var candidate_with_no_votes = "Dee Elliis";
 var candidate_with_one_vote = "Fulton Grunge";
 var candidate_with_many_votes = "Hudson Ivers"
-var VOTED_VOTERID = 3543223;
-var VOTED_OLDER_VOTERID = 3543222;
-var DID_NOT_VOTE_VOTERID = 3543224;
+var VOTED_VOTERID = mongoose.Types.ObjectId();
+var VOTED_OLDER_VOTERID = mongoose.Types.ObjectId();
+var DID_NOT_VOTE_VOTERID = mongoose.Types.ObjectId();
 var currentDateStr = "2016-10-09T20:54:19.797Z";
 
 // these values assume the vote math is votevalue = value as long as the vote hasn't expired
@@ -38,7 +38,7 @@ describe('candidatelogic', function() {
 			      {
 		        	"starttime": "2016-10-09T20:54:19.797Z",
 			        "value": 10,
-		    	    "voter_id": VOTED_VOTERID,
+		    	    "voterId": VOTED_VOTERID,
 		        	"endtime": "2016-10-09T21:02:19.797Z",
 			        "expired": false
 		    	  }
@@ -52,14 +52,14 @@ describe('candidatelogic', function() {
 				      {
 			        	"starttime": "2016-10-09T20:54:19.797Z",
 				        "value": 8,
-			    	    "voter_id": VOTED_VOTERID,
+			    	    "voterId": VOTED_VOTERID,
 			        	"endtime": "2016-10-09T21:02:19.797Z",
 				        "expired": false
 			    	  },
 				      {
 			        	"starttime": "2016-10-09T20:53:19.797Z",
 				        "value": 6,
-			    	    "voter_id": VOTED_OLDER_VOTERID,
+			    	    "voterId": VOTED_OLDER_VOTERID,
 			        	"endtime": "2016-10-09T21:01:19.797Z",
 				        "expired": true
 			    	  }
@@ -96,7 +96,7 @@ describe('candidatelogic', function() {
     		});
 	    });
 
-    	it('candidae with one vote has low value', function(done) {
+    	it('candidate with one vote has low value', function(done) {
     		bizCandidate.calculateCandidateValueAsOfTime(candidate_with_one_vote, new Date(currentDateStr), 
     			function(error, result) {
     			if (error == undefined || error == null) {

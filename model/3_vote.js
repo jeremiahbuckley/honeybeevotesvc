@@ -4,8 +4,8 @@ var name = "vote";
 
 function makeSchema() {
 	var schema = mongoose.Schema({
-		voter_id: { 
-			type: Number,
+		voterId: { 
+			type: mongoose.Schema.Types.ObjectId,
 			required: true
 		},
 		value: {

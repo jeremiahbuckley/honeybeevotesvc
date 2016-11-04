@@ -76,25 +76,6 @@ function dropCandidateCollection(callback) {
 function addVoters(callback) {
     console.log("add test voters");
 
-    // var voter;
-    // voter = new mongoose.models.voter( { name: "Aaron Burr", password: "Invincible1" });
-    // voter.save(function(error, response) {
-    //     if (error) {
-    //         console.log(error);
-    //     } else {
-    //         console.log("first ok");
-    //         voter = new mongoose.models.voter( { name: "Charlotte Dorothy", password: "Invincible1" });
-    //         voter.save(function(error, response) {
-    //             if (error) {
-    //                 console.log(error);
-    //             } else {
-    //                 console.log("second ok");
-    //                 return callback(0);
-    //             }
-    //         });
-    //     }
-    // });
-
     voter = reader_test_db.collection('voters');
     if (undefined == voter) {
         console.error('unable to create basic voters');

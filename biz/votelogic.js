@@ -52,7 +52,14 @@ module.exports = function() {
 		vote.endtime.setMinutes(vote.endtime.getMinutes() + vote.value);
 	}
 
+	logic.setVoteStartTimeIfNull = function(vote) {
+		if (!vote.starttime) {
+			vote.starttime = new Date();
+		}
+	}
+
 	logic.setEndtimeAndExpired = function(vote) {
+		this.setVoteStartTimeIfNull(vote);
 		this.setVoteEndtime(vote);
 		this.checkAndExpireVote(vote);
 	}

@@ -7,9 +7,9 @@ var mocha = require('mocha');
 
 var bizVoter = new bzVoter();
 
-var VOTED_VOTERID = 3543223;
-var VOTED_EXPIRED_VOTERID = 3543222;
-var DID_NOT_VOTE_VOTERID = 3543224;
+var VOTED_VOTERID = mongoose.Types.ObjectId();
+var VOTED_EXPIRED_VOTERID = mongoose.Types.ObjectId();
+var DID_NOT_VOTE_VOTERID = mongoose.Types.ObjectId();
 
 describe('voterlogic', function() {
 
@@ -25,14 +25,14 @@ describe('voterlogic', function() {
 		      {
 	        	"starttime": "2016-10-09T20:54:19.797Z",
 		        "value": 8,
-	    	    "voter_id": VOTED_VOTERID,
+	    	    "voterId": VOTED_VOTERID,
 	        	"endtime": "2016-10-09T21:02:19.797Z",
 		        "expired": false
 	    	  },
 		      {
 	        	"starttime": "2016-10-09T10:54:19.797Z",
 		        "value": 8,
-	    	    "voter_id": VOTED_EXPIRED_VOTERID,
+	    	    "voterId": VOTED_EXPIRED_VOTERID,
 	        	"endtime": "2016-10-09T11:02:19.797Z",
 		        "expired": true
 	    	  }
