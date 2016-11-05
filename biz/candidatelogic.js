@@ -14,14 +14,16 @@ module.exports = function() {
 	};
 
 	logic.calculateCandidateValueAsOfTime = function(candidatename, datetime, callback) {
-		mongoose.models.candidate.findOne( { name: candidatename}, function (error, result) {
-			if (error != null || error != undefined) {
+		mongoose.models.candidate.findOne( { name: candidatename}, function (error, candidate) {
+			if (error) {
 				callback(error);
 			} else {
+				// console.log(candidate);
+				// console.log("datetime: " + datetime);
 				var value = 0.0;
 				try {
-					if (result != null) {
-						result.votes.forEach( function(current) {
+					if (candidate != null) {
+						candidate.votes.forEach( function(current) {
 							var vval = bizVote.voteValue(current, datetime);
 							value = value + vval;
 						});
@@ -35,19 +37,19 @@ module.exports = function() {
 	};
 
 	logic.recalcAllCandidates = function( callback ) {
-		mongoose.models.candidate.find( {}, function (error, result) {
-			if (error != null || error != undefined) {
+		mongoose.models.candidate.find( {}, function (error, candidates) {
+			if (error) {
 				callback(error);
 			} else {
-				async.each(result, 
+				async.each(candidates, 
 					function(item, cb) {
 						logic.calculateCandidateValue(item.name, 
-							function(err, result) {
+							function(err, candidateValue) {
 								if (err != null || err != undefined){
 									cb(err);
 								} else {
 									mongoose.models.candidate.findOneAndUpdate( { name: item.name }, 
-										{ value: result }, 
+										{ value: candidateValue }, 
 										{},
 										function (error) {
 											if (error) {
