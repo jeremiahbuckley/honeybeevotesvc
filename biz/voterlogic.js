@@ -4,7 +4,11 @@ module.exports = function() {
 	var logic = {};
 
 	logic.voterCanVote = function(voterid, callback) {
-		mongoose.models.candidate.findOne( { votes: { $elemMatch: {voter_id: voterid, expired: false }} }, 
+		if (typeof voterid == "string") {
+			var v = voterid;
+			voterid = mongoose.Type.ObjectId(v);
+		}
+		mongoose.models.candidate.findOne( { votes: { $elemMatch: {voterId: voterid, expired: false }} }, 
 			function (error, result) {
 				if (error != null || error != undefined) {
 					callback(error, null);
