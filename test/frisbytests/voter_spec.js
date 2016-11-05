@@ -26,14 +26,14 @@ frisby.create('POST voter')
           .expectStatus(200)
           .expectHeader('Content-Type', 'application/json; charset=utf-8')
           .expectJSON(
-            [{ 
+            { 
               'name': NAME,
               'password': PWD
-            }])
+            })
           .afterJSON( function(json) {
 
             frisby.create('DELETE voters')
-                .delete(tc.url + '/voters/' + json[0]._id)
+                .delete(tc.url + '/voters/' + json._id)
                 .inspectBody()
                 .expectStatus(200)
                 .toss();

@@ -37,6 +37,18 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(utils.requestTime);
 
 
+// a middleware with no mount path; gets executed for every request to the app
+app.use(function(req, res, next) {
+  try {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+    res.setHeader("Access-Control-Allow-Headers", "Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers");
+  }catch(ex) {
+    console.log(ex);
+  }
+  next();
+});
+
 // Configure the Basic strategy for use by Passport.
 //
 // The Basic strategy requires a `verify` function which receives the
