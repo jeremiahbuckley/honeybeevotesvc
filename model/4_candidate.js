@@ -12,6 +12,10 @@ function makeSchema() {
 			type: Number, 
 			required: true
 		},
+        electionId: { 
+            type: mongoose.Schema.Types.ObjectId,
+            required: false
+        },
 		votes: [mongoose.model('vote').schema]
 	});
     schema.virtual('links').get(function () {

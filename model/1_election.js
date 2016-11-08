@@ -8,8 +8,8 @@ function makeSchema() {
 			type: String,
 			required: true
 		},
-		candidateIds: [Number],
-		voterIds: [Number]
+		candidateIds: [mongoose.Schema.Types.ObjectId],
+		voterIds: [mongoose.Schema.Types.ObjectId]
 	});
     schema.virtual('links').get(function () {
         /* TODO: These should be absolute URIs */

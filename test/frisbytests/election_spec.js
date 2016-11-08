@@ -1,5 +1,6 @@
 var jasmine = require('jasmine-node');
 var frisby = require('frisby');
+var mongoose = require('mongoose');
 var tc = require('../config/test_config');
 var dbConfig = require('../config/db');
 
@@ -55,7 +56,7 @@ frisby.create('POST election')
     .toss();
 
 var electionIdUrl2;
-var candidateId = 223;
+var candidateId = mongoose.Types.ObjectId();
 frisby.create('POST election')
     .post(tc.url + '/elections',
       { 
@@ -87,7 +88,7 @@ frisby.create('POST election')
                 .expectJSON(
                   { 
                     'name': NAME,
-                    'candidateIds': [ candidateId ]
+                    'candidateIds': [ candidateId.toString() ]
                   })
                 .afterJSON ( function (json) {
                   frisby.create('DELETE elections')
@@ -103,7 +104,7 @@ frisby.create('POST election')
     .toss();
 
 var electionIdUrl;
-var voterId = 568765;
+var voterId = mongoose.Types.ObjectId();
 frisby.create('POST election')
     .post(tc.url + '/elections',
       { 
@@ -135,7 +136,7 @@ frisby.create('POST election')
                 .expectJSON(
                   { 
                     'name': NAME,
-                    'voterIds': [ voterId ]
+                    'voterIds': [ voterId.toString() ]
                   })
                 .afterJSON ( function (json) {
                   frisby.create('DELETE elections')
