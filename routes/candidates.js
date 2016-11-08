@@ -200,7 +200,14 @@ module.exports = function() {
 						if (error != null) {
 							res.status(500).send(error);
 						} else {
-							res.status(200).send();
+							mongoose.models.election.update({candidateIds: req.params.id}, 
+								{ $pullAll: {candidateIds: [req.params.id] }}, function(error) {
+									if (error != null) {
+										res.status(500).send(error);
+									} else {
+										res.status(200).send();
+									}
+								});
 						}
 					});
 				}
