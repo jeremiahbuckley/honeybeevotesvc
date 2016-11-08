@@ -4,14 +4,19 @@ module.exports = function() {
 
 	var logic = {}
 
-	logic.voteValue = function(vote, now) {
-		if (now == undefined) {
-			now = new Date();
+	logic.voteValue = function(vote, asOfTime) {
+		if (asOfTime == undefined) {
+			asOfTime = new Date();
 		}
-		var d = new Date(vote.starttime);
-		now.setMinutes(now.getMinutes() + 10);
-		var difference = now.getTime() - d.getTime();
-		if (difference > 0) {
+		var startTime = new Date(vote.starttime);
+		var endTime = new Date(vote.endtime);
+		var sTdifference = asOfTime.getTime() - startTime.getTime();
+		var eTdifference = asOfTime.getTime() - endTime.getTime();
+		// console.log('asOfTime: ' + asOfTime.toString());
+		// console.log('startTime: ' + startTime.toString());
+		// console.log('endTime: ' + endTime.toString());
+		// console.log('sTdifference: ' + sTdifference + ', eTdifference: ' + eTdifference);
+		if (sTdifference >= 0 && eTdifference < 0) {
 			return vote.value;
 		} else {
 			return 0;
@@ -19,21 +24,33 @@ module.exports = function() {
 	}
 
 	logic.expireVotes = function() {
-		var sd = new Date();
-		var ed = new Date();
-		sd.setMinutes(sd.getMinutes() - 10);
-		ed.setMinutes(ed.getMinutes() + 10);
-		mongoose.models.vote.find( {
-			enddate: {
-				$gte: sd,
-				$lte: ed
+		mongoose.models.candidate.find( { 'votes.expired': false }, function(error, candidates) {
+			if (error) {
+				console.log(error.message);
+			} else {
+				// console.log("Result " + candidates);
+				var now = new Date();
+				candidates.forEach( function (candidate) {
+					candidate.votes.forEach( function(vote) {
+						var needSave = false;
+						if (!vote.expired) {
+							// console.log("Vote to fix: " + vote);
+							if (logic.checkAndExpireVote(vote, now)) {
+								needSave = true;
+							}
+						}
+						if (needSave) {
+							candidate.save(function (err) {
+								if (err) {
+									console.log(err.message);
+								}
+							});
+						}
+
+					})
+				});
 			}
-		}, function (error, result) {
-			var now = new Date();
-			result.forEach( function (current) {
-				logic.checkAndExpireVote(current, now);
-			})
-		})
+		});
 	}
 
 	logic.checkAndExpireVote = function(vote, expireTime) {
@@ -43,7 +60,12 @@ module.exports = function() {
 		vote.expired = false;
 
 		if (vote.endtime.getTime() < expireTime.getTime()) {
+			// console.log("Expired: " + vote._id);
 			vote.expired = true;
+			return true;
+		} else {
+			// console.log("Not-expired: " + vote._id);
+			return false;
 		}
 	}
 
