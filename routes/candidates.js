@@ -136,7 +136,24 @@ module.exports = function() {
 			if (error != null) {
 				res.status(500).send(error);
 			} else {
-				res.status(201).send(req.originalUrl + "/" + response._id);
+				var responseUrl = req.originalUrl + "/" + response._id;
+
+				if (req.body.electionId && req.body.electionId.length > 0) {
+					console.log("doing electionId");
+
+					mongoose.models.election.findByIdAndUpdate(mongoose.Types.ObjectId(req.body.electionId),
+					    {$push: {"candidateIds": response._id}},
+					    {safe: true, upsert: true},
+					    function(error, model) {
+					    	if (error) {
+								res.status(500).send(error);
+						    } else {
+								res.status(201).send(responseUrl);
+						    }
+					    });
+				} else {
+					res.status(201).send(responseUrl);
+				}
 			}
 		});
 	});
@@ -183,7 +200,14 @@ module.exports = function() {
 						if (error != null) {
 							res.status(500).send(error);
 						} else {
-							res.status(200).send();
+							mongoose.models.election.update({candidateIds: req.params.id}, 
+								{ $pullAll: {candidateIds: [req.params.id] }}, function(error) {
+									if (error != null) {
+										res.status(500).send(error);
+									} else {
+										res.status(200).send();
+									}
+								});
 						}
 					});
 				}

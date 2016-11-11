@@ -26,12 +26,12 @@ module.exports = function() {
 		} 
 	}
 
-	router.post('/:id/candidateid/:candidateid', function(req, res) {
-		pushPullElectionParticipantIds(req, res, req.params.id, req.params.candidateid, true, true);
+	router.post('/candidateid/', function(req, res) {
+		pushPullElectionParticipantIds(req, res, req.body.id, req.body.candidateid, true, true);
 	});
 
-	router.post('/:id/voterid/:voterid', function(req, res) {
-		pushPullElectionParticipantIds(req, res, req.params.id, req.params.voterid, true, false);
+	router.post('/voterid/', function(req, res) {
+		pushPullElectionParticipantIds(req, res, req.body.id, req.body.voterid, true, false);
 	});
 
 	router.post('/', function(req, res) {
@@ -118,7 +118,7 @@ module.exports = function() {
 		} else {
 			participantType = "voterIds";
 		}
-		update[verb][participantType] = participantId;
+		update[verb][participantType] = mongoose.Types.ObjectId(participantId);
 
 		mongoose.models.election.findOne({ _id: electionId}, function(error, response) {
 			if (error != null) {
