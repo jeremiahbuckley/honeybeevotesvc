@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+var async = require('async');
 var bzVote = require('../biz/votelogic.js');
 var bzVoter = require('../biz/voterlogic.js');
 var mongoose = require('mongoose');
@@ -9,6 +10,44 @@ module.exports = function() {
 
 	var bizVote = bzVote();
 	var bizVoter = bzVoter();
+
+	router.post('/list', function(req, res) {
+		console.log('here');
+		console.log(req.body);
+		console.log(async);
+		async.map(req.body, 
+			function (id, cb) {
+				console.log('jbjbjb');
+				mongoose.models.candidate.findOne({ _id: id }, function (error, response) {
+					if (error != null) {
+						cb(error);
+					} else {
+						cb(null, response);
+					}
+				});
+			}, 
+			function (error, results) {
+				if (error != null) {
+					res.status(500).send(error);
+				} else {
+					if (results == null || results == undefined || results.length == 0) {
+						res.status(404).send();
+					} else {
+						const cleanResults = [];
+						results.forEach(function(result) {
+							if (result) {
+								cleanResults.push(result);
+							}
+						});
+						if (results.length == 0) {
+							res.status(404).send();
+						} else {
+							res.status(200).send(cleanResults);
+						}
+					}
+				}
+			});
+	});
 
 	router.get('/:candidateid/votes', function(req, res) {
 		getVotes(req, res, null, { _id: req.params.candidateid });
