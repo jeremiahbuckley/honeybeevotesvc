@@ -74,7 +74,7 @@ module.exports = function() {
 				res.status(500).send('Voter cannot vote until previous vote expires');
 			} else {
 
-				bizVote.setEndtimeAndExpired(vote, {voteSustainDuration: 10, voterDormancyDuration: 10});
+				bizVote.setEndtimeAndExpired(vote, {voteSustainDuration: 5, voterDormancyDuration: 8});
 				mongoose.models.candidate.findOne( { _id: req.params.candidateid }, function (error, response) {
 					if (error != null) {
 						res.status(500).send(error);
