@@ -12,12 +12,8 @@ module.exports = function() {
 	var bizVoter = bzVoter();
 
 	router.post('/list', function(req, res) {
-		console.log('here');
-		console.log(req.body);
-		console.log(async);
 		async.map(req.body, 
 			function (id, cb) {
-				console.log('jbjbjb');
 				mongoose.models.candidate.findOne({ _id: id }, function (error, response) {
 					if (error != null) {
 						cb(error);
@@ -178,8 +174,6 @@ module.exports = function() {
 				var responseUrl = req.originalUrl + "/" + response._id;
 
 				if (req.body.electionId && req.body.electionId.length > 0) {
-					console.log("doing electionId");
-
 					mongoose.models.election.findByIdAndUpdate(mongoose.Types.ObjectId(req.body.electionId),
 					    {$push: {"candidateIds": response._id}},
 					    {safe: true, upsert: true},

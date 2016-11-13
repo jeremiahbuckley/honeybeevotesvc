@@ -93,7 +93,7 @@ frisby.create(testStr + 'POST create candidate')
             { 
               'voterId': VoterId,
               'value': Candidatev1VoteValue,
-              'starttime': Candidatev1VoteEntryDate
+              'startTime': Candidatev1VoteEntryDate
             },
             { json: true },
             { headers: { 'Content-Type': 'application/json' }})
@@ -113,7 +113,7 @@ frisby.create(testStr + 'POST create candidate')
                       {
                         'voterId' : VoterId.toString(),
                         'value' : Candidatev1VoteValue,
-                        'starttime' : Candidatev1VoteEntryDate.toISOString(),
+                        'startTime' : Candidatev1VoteEntryDate.toISOString(),
                         'expired' : false
                       }
                   ])
@@ -163,7 +163,7 @@ frisby.create(testStr + 'POST candidate')
             { 
               'voterId': VId1,
               'value': CV1Value,
-              'starttime': CV1EntryDate
+              'startTime': CV1EntryDate
             },
             { json: true },
             { headers: { 'Content-Type': 'application/json' }})
@@ -178,7 +178,7 @@ frisby.create(testStr + 'POST candidate')
                 { 
                   'voterId': VId2,
                   'value': CV2Value,
-                  'starttime': CV2EntryDate
+                  'startTime': CV2EntryDate
                 },
                 { json: true },
                 { headers: { 'Content-Type': 'application/json' }})
@@ -198,13 +198,13 @@ frisby.create(testStr + 'POST candidate')
                         {
                           'voterId' : VId1.toString(),
                           'value' : CV1Value,
-                          'starttime' : CV1EntryDate.toISOString(),
+                          'startTime' : CV1EntryDate.toISOString(),
                           'expired' : false
                         },
                         {
                           'voterId' : VId2.toString(),
                           'value' : CV2Value,
-                          'starttime' : CV2EntryDate.toISOString(),
+                          'startTime' : CV2EntryDate.toISOString(),
                           'expired' : false
                         }
                     ])
@@ -255,7 +255,7 @@ frisby.create(testStr + 'POST create candidate')
             { 
               'voterId': VoterId,
               'value': CV1Value,
-              'starttime': CV1EntryDate
+              'startTime': CV1EntryDate
             },
             { json: true },
             { headers: { 'Content-Type': 'application/json' }})
@@ -270,7 +270,7 @@ frisby.create(testStr + 'POST create candidate')
                 { 
                   'voterId': VoterId,
                   'value': CV2Value,
-                  'starttime': CV2EntryDate
+                  'startTime': CV2EntryDate
                 },
                 { json: true },
                 { headers: { 'Content-Type': 'application/json' }})
@@ -290,7 +290,7 @@ frisby.create(testStr + 'POST create candidate')
                           {
                             'voterId' : VoterId.toString(),
                             'value' : CV1Value,
-                            'starttime' : CV1EntryDate.toISOString(),
+                            'startTime' : CV1EntryDate.toISOString(),
                             'expired' : false
                           }
                       ])

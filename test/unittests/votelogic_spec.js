@@ -11,14 +11,14 @@ describe('votelogic', function() {
     it('should set an enddate (uses the math startime+value)', function() {
     	var start = new Date();
     	var val = 10;
-    	var vote = new mongoose.models.vote( { value: val, starttime: start } );
+    	var vote = new mongoose.models.vote( { value: val, startTime: start } );
 
-    	// this assumes the expire function is starttime+value
+    	// this assumes the expire function is startTime+value
     	var end = new Date(start.getTime());
     	end.setMinutes(end.getMinutes() + val);
     	bizVote.setVoteEndtime(vote);
 
-    	assert.deepEqual(vote.endtime, end);
+    	assert.deepEqual(vote.endTime, end);
     });
   });
 
@@ -29,7 +29,7 @@ describe('votelogic', function() {
     	var val = 10;
     	start.setMinutes(start.getMinutes() - 7);
     	end.setMinutes(end.getMinutes() + 3);
-    	var vote = new mongoose.models.vote( { value: val, starttime: start, endtime: end } );
+    	var vote = new mongoose.models.vote( { value: val, startTime: start, endTime: end } );
 
     	bizVote.checkAndExpireVote(vote);
     	assert.equal(vote.expired, false);
@@ -41,7 +41,7 @@ describe('votelogic', function() {
     	var val = 5;
     	start.setMinutes(start.getMinutes() - 7);
     	end.setMinutes(end.getMinutes() -2);
-    	var vote = new mongoose.models.vote( { value: val, starttime: start, endtime: end } );
+    	var vote = new mongoose.models.vote( { value: val, startTime: start, endTime: end } );
 
     	bizVote.checkAndExpireVote(vote);
     	assert.equal(vote.expired, true);
@@ -53,7 +53,7 @@ describe('votelogic', function() {
     	var val = 5;
     	start.setMinutes(start.getMinutes() + 7);
     	end.setMinutes(end.getMinutes() + 12);
-    	var vote = new mongoose.models.vote( { value: val, starttime: start, endtime: end } );
+    	var vote = new mongoose.models.vote( { value: val, startTime: start, endTime: end } );
 
     	bizVote.checkAndExpireVote(vote);
     	assert.equal(vote.expired, false);

@@ -8,6 +8,15 @@ function makeSchema() {
 			type: String,
 			required: true
 		},
+        winThreshhold: {
+            type: Number
+        },
+        voteSustainDuration: {
+            type: Number
+        },
+        voterDormancyDuration: {
+            type: Number
+        },
 		candidateIds: [mongoose.Schema.Types.ObjectId],
 		voterIds: [mongoose.Schema.Types.ObjectId]
 	});

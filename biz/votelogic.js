@@ -8,8 +8,8 @@ module.exports = function() {
 		if (asOfTime == undefined) {
 			asOfTime = new Date();
 		}
-		var startTime = new Date(vote.starttime);
-		var endTime = new Date(vote.endtime);
+		var startTime = new Date(vote.startTime);
+		var endTime = new Date(vote.endTime);
 		var sTdifference = asOfTime.getTime() - startTime.getTime();
 		var eTdifference = asOfTime.getTime() - endTime.getTime();
 		// console.log('asOfTime: ' + asOfTime.toString());
@@ -59,7 +59,7 @@ module.exports = function() {
 		}
 		vote.expired = false;
 
-		if (vote.endtime.getTime() < expireTime.getTime()) {
+		if (vote.endTime.getTime() < expireTime.getTime()) {
 			// console.log("Expired: " + vote._id);
 			vote.expired = true;
 			return true;
@@ -70,13 +70,13 @@ module.exports = function() {
 	}
 
 	logic.setVoteEndtime = function(vote) {
-		vote.endtime = new Date(vote.starttime.getTime());
-		vote.endtime.setMinutes(vote.endtime.getMinutes() + vote.value);
+		vote.endTime = new Date(vote.startTime.getTime());
+		vote.endTime.setMinutes(vote.endTime.getMinutes() + vote.value);
 	}
 
 	logic.setVoteStartTimeIfNull = function(vote) {
-		if (!vote.starttime) {
-			vote.starttime = new Date();
+		if (!vote.startTime) {
+			vote.startTime = new Date();
 		}
 	}
 
