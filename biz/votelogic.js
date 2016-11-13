@@ -117,9 +117,9 @@ module.exports = function() {
 		}
 	}
 
-	logic.setEndtimeAndExpired = function(vote) {
+	logic.setEndtimeAndExpired = function(vote, election) {
 		this.setVoteStartTimeIfNull(vote);
-		this.setVoteEndtimes(vote, {voteSustainDuration: 10, voterDormancyDuration: 10});
+		this.setVoteEndtimes(vote, election);
 		this.checkAndExpireVote(vote);
 	}
 
