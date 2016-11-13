@@ -6,57 +6,116 @@ var mongoose = require('mongoose');
 
 var bizVote = bzVote(null);
 
-describe('votelogic', function() {
-  describe('setVoteEnddate', function() {
-    it('should set an enddate (uses the math startime+value)', function() {
-    	var start = new Date();
-    	var val = 10;
-    	var vote = new mongoose.models.vote( { value: val, startTime: start } );
+var testElectionName = "test-election-name";
+var testVoteValue = 1234.5678;
 
-    	// this assumes the expire function is startTime+value
-    	var end = new Date(start.getTime());
-    	end.setMinutes(end.getMinutes() + val);
-    	bizVote.setVoteEndtime(vote);
+describe('votelogic', function() {
+
+  
+    afterEach(function(done) {
+        mongoose.models.candidate.remove ( { "name" :  testElectionName } , function (error, result) {
+            mongoose.models.vote.remove ( { "value" :  testVoteValue } , function (error, result) {
+                done();
+            });
+        });
+    });
+
+  describe('setVoteEnddate', function() {
+    it('should set an endTime and endDormancyTime based on election settings', function() {
+    	var start = new Date();
+        var voteVal = testVoteValue;
+    	var sustainVal = 10;
+        var dormancyVal = 15;
+    	var vote = new mongoose.models.vote( { value: voteVal, startTime: start } );
+        var election = new mongoose.models.election( {name: testElectionName, winThreshhold: 100, voteSustainDuration: sustainVal, voterDormancyDuration: dormancyVal});
+
+    	bizVote.setVoteEndtimes(vote, election);
+
+        var end = new Date(start.getTime());
+        end.setMinutes(end.getMinutes() + sustainVal);
+        var endDormancy = new Date(start.getTime());
+        endDormancy.setMinutes(endDormancy.getMinutes() + dormancyVal);
 
     	assert.deepEqual(vote.endTime, end);
+        assert.deepEqual(vote.endDormancyTime, endDormancy);
     });
   });
 
   describe('checkAndExpireVote', function() {
-    it('should set expired = false for current votes', function() {
+    it('should set expired = false and voterIsDormant = true for current votes', function() {
+        var testTime = new Date();
     	var start = new Date();
+        start.setMinutes(start.getMinutes() - 7);
     	var end = new Date(start.getTime());
-    	var val = 10;
-    	start.setMinutes(start.getMinutes() - 7);
-    	end.setMinutes(end.getMinutes() + 3);
-    	var vote = new mongoose.models.vote( { value: val, startTime: start, endTime: end } );
+        var endDormancy = new Date(start.getTime());
+        var sustainVal = 10;
+        var dormancyVal = 15;
+    	end.setMinutes(end.getMinutes() + sustainVal);
+        endDormancy.setMinutes(endDormancy.getMinutes() + dormancyVal);
+        var voteVal = testVoteValue;
+    	var vote = new mongoose.models.vote( { value: voteVal, startTime: start, endTime: end, endDormancyTime: endDormancy } );
+        var election = new mongoose.models.election( {name: testElectionName, winThreshhold: 100, voteSustainDuration: sustainVal, voterDormancyDuration: dormancyVal});
 
-    	bizVote.checkAndExpireVote(vote);
+    	bizVote.checkAndExpireVote(vote, testTime);
     	assert.equal(vote.expired, false);
+        assert.equal(vote.voterIsDormant, true);
     });
 
-    it('should set expired = true for old votes', function() {
-    	var start = new Date();
-    	var end = new Date(start.getTime());
-    	var val = 5;
-    	start.setMinutes(start.getMinutes() - 7);
-    	end.setMinutes(end.getMinutes() -2);
-    	var vote = new mongoose.models.vote( { value: val, startTime: start, endTime: end } );
+    it('should set expired = true and voterIsDormant = true for slightly aged votes', function() {
+        var testTime = new Date();
+        var start = new Date();
+        start.setMinutes(start.getMinutes() - 11);
+        var end = new Date(start.getTime());
+        var endDormancy = new Date(start.getTime());
+        var sustainVal = 10;
+        var dormancyVal = 15;
+        end.setMinutes(end.getMinutes() + sustainVal);
+        endDormancy.setMinutes(endDormancy.getMinutes() + dormancyVal);
+        var voteVal = testVoteValue;
+        var vote = new mongoose.models.vote( { value: voteVal, startTime: start, endTime: end, endDormancyTime: endDormancy } );
+        var election = new mongoose.models.election( {name: testElectionName, winThreshhold: 100, voteSustainDuration: sustainVal, voterDormancyDuration: dormancyVal});
 
-    	bizVote.checkAndExpireVote(vote);
+        bizVote.checkAndExpireVote(vote, testTime);
+        assert.equal(vote.expired, true);
+        assert.equal(vote.voterIsDormant, true);
+    });
+
+    it('should set expired = true and voterIsDormant = false for very old votes', function() {
+        var testTime = new Date();
+    	var start = new Date();
+        start.setMinutes(start.getMinutes() - 17);
+    	var end = new Date(start.getTime());
+        var endDormancy = new Date(start.getTime());
+        var sustainVal = 10;
+        var dormancyVal = 15;
+    	end.setMinutes(end.getMinutes() + sustainVal);
+        endDormancy.setMinutes(endDormancy.getMinutes() + dormancyVal);
+        var voteVal = testVoteValue;
+        var vote = new mongoose.models.vote( { value: voteVal, startTime: start, endTime: end, endDormancyTime: endDormancy } );
+        var election = new mongoose.models.election( {name: testElectionName, winThreshhold: 100, voteSustainDuration: sustainVal, voterDormancyDuration: dormancyVal});
+
+    	bizVote.checkAndExpireVote(vote, testTime);
     	assert.equal(vote.expired, true);
+        assert.equal(vote.voterIsDormant, false);
     });
 
-    it('should set expired = false for future votes', function() {
+    it('should set expired = true and voterIsDormant = false for future votes', function() {
+        var testTime = new Date();
     	var start = new Date();
+        start.setMinutes(start.getMinutes() + 7);
     	var end = new Date(start.getTime());
-    	var val = 5;
-    	start.setMinutes(start.getMinutes() + 7);
-    	end.setMinutes(end.getMinutes() + 12);
-    	var vote = new mongoose.models.vote( { value: val, startTime: start, endTime: end } );
+        var endDormancy = new Date(start.getTime());
+        var sustainVal = 10;
+        var dormancyVal = 15;
+    	end.setMinutes(end.getMinutes() + sustainVal);
+        endDormancy.setMinutes(endDormancy.getMinutes() + dormancyVal);
+        var voteVal = testVoteValue;
+        var vote = new mongoose.models.vote( { value: voteVal, startTime: start, endTime: end, endDormancyTime: endDormancy } );
+        var election = new mongoose.models.election( {name: testElectionName, winThreshhold: 100, voteSustainDuration: sustainVal, voterDormancyDuration: dormancyVal});
 
-    	bizVote.checkAndExpireVote(vote);
-    	assert.equal(vote.expired, false);
+    	bizVote.checkAndExpireVote(vote, testTime);
+    	assert.equal(vote.expired, true);
+        assert.equal(vote.voterIsDormant, false);
     });
 
   });

@@ -141,8 +141,6 @@ module.exports = function() {
 		});
 	});
 
-
-
 	router.get('/', function(req, res) {
 		mongoose.models.candidate.find(null, returnGet(req, res))
 	});

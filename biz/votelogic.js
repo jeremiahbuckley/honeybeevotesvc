@@ -33,7 +33,7 @@ module.exports = function() {
 				candidates.forEach( function (candidate) {
 					candidate.votes.forEach( function(vote) {
 						var needSave = false;
-						if (!vote.expired) {
+						if (!vote.expired || vote.voterIsDormant) {
 							// console.log("Vote to fix: " + vote);
 							if (logic.checkAndExpireVote(vote, now)) {
 								needSave = true;
@@ -46,32 +46,69 @@ module.exports = function() {
 								}
 							});
 						}
-
 					})
 				});
 			}
 		});
 	}
 
-	logic.checkAndExpireVote = function(vote, expireTime) {
-		if (expireTime == undefined) {
-			expireTime = new Date();
+	logic.checkAndExpireVote = function(vote, testTime) {
+		if (testTime == undefined) {
+			testTime = new Date();
 		}
-		vote.expired = false;
 
-		if (vote.endTime.getTime() < expireTime.getTime()) {
+		var needSave = false;
+		// console.log(vote);
+		// console.log(testTime);
+		if (vote.endTime.getTime() < testTime.getTime()) {
 			// console.log("Expired: " + vote._id);
 			vote.expired = true;
-			return true;
+			needSave = true;
 		} else {
-			// console.log("Not-expired: " + vote._id);
-			return false;
+			if (testTime.getTime() < vote.startTime.getTime()) {
+				// console.log("Expired: " + vote._id);
+				vote.expired = true;
+				needSave = true;
+			} else {
+				// console.log("Not-expired: " + vote._id);
+				vote.expired = false;
+			}
 		}
+
+		if (vote.endDormancyTime == null || vote.endDormancyTime == undefined) {
+			if (vote.endTime == null || vote.endTime == undefined) {
+				vote.endDormancyTime = new Date(vote.startTime.getTime());
+				needSave = true;
+			} else {
+				vote.endDormancyTime = new Date(vote.endTime.getTime());
+				needSave = true;
+			}
+		}
+
+		if (vote.endDormancyTime.getTime() < testTime.getTime()) {
+			// console.log("voter active: " + vote._id);
+			vote.voterIsDormant = false;
+			needSave = true;
+		} else {
+			if (testTime.getTime() < vote.startTime.getTime()) {
+				// console.log("voter active: " + vote._id);
+				vote.voterIsDormant = false;
+				needSave = true;
+			} else {
+				// console.log("voter dormant: " + vote._id);
+				vote.voterIsDormant = true;
+			}
+		}
+
+		return needSave;
 	}
 
-	logic.setVoteEndtime = function(vote) {
+	logic.setVoteEndtimes = function(vote, election) {
 		vote.endTime = new Date(vote.startTime.getTime());
-		vote.endTime.setMinutes(vote.endTime.getMinutes() + vote.value);
+		vote.endDormancyTime = new Date(vote.startTime.getTime());
+
+		vote.endTime.setMinutes(vote.endTime.getMinutes() + election.voteSustainDuration);
+		vote.endDormancyTime.setMinutes(vote.endDormancyTime.getMinutes() + election.voterDormancyDuration);
 	}
 
 	logic.setVoteStartTimeIfNull = function(vote) {
@@ -82,7 +119,7 @@ module.exports = function() {
 
 	logic.setEndtimeAndExpired = function(vote) {
 		this.setVoteStartTimeIfNull(vote);
-		this.setVoteEndtime(vote);
+		this.setVoteEndtimes(vote, {voteSustainDuration: 10, voterDormancyDuration: 10});
 		this.checkAndExpireVote(vote);
 	}
 
