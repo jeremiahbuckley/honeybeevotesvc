@@ -16,11 +16,19 @@ function makeSchema() {
 			type: Boolean,
 			required: true
 		},
-		starttime: {
+		voterIsDormant: {
+			type: Boolean,
+			required: true
+		},
+		startTime: {
 			type: Date,
 			required: true
 		},
-		endtime: {
+		endTime: {
+			type: Date,
+			required: true
+		},
+		endDormancyTime: {
 			type: Date,
 			required: true
 		}

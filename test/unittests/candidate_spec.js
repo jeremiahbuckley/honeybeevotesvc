@@ -27,7 +27,6 @@ describe('candidatelogic', function() {
 
 
 	before('before tests', function(done) {
-		console.log('before');
 		var c = new mongoose.models.candidate(  {
 	    	"name": "Dee Ellis",
 	    	"value": 0,
@@ -39,11 +38,13 @@ describe('candidatelogic', function() {
 		    	"value": 0,
 		    	"votes": [
 			      {
-		        	"starttime": currentDate.toString(),
+		        	"startTime": currentDate.toString(),
 			        "value": 10,
 		    	    "voterId": VOTED_VOTERID,
-		        	"endtime": new Date(currentDate.toString()).setMinutes(new Date(currentDate.toString()).getMinutes() + 10).toString(),
-			        "expired": false
+		        	"endTime": new Date(currentDate.toString()).setMinutes(new Date(currentDate.toString()).getMinutes() + 10).toString(),
+		        	"endDormancyTime": new Date(currentDate.toString()).setMinutes(new Date(currentDate.toString()).getMinutes() + 10).toString(),
+			        "expired": false,
+			        "voterIsDormant": false
 		    	  }
 			    ]
 	 		});
@@ -53,18 +54,22 @@ describe('candidatelogic', function() {
 			    	"value": 0,
 			    	"votes": [
 				      {
-			        	"starttime": new Date(currentDate.toString()).setMinutes(new Date(currentDate.toString()).getMinutes() - 1).toString(),
+			        	"startTime": new Date(currentDate.toString()).setMinutes(new Date(currentDate.toString()).getMinutes() - 1).toString(),
 				        "value": 8,
 			    	    "voterId": VOTED_VOTERID,
-			        	"endtime": new Date(currentDate.toString()).setMinutes(new Date(currentDate.toString()).getMinutes() + (8 - 1)).toString(),
-				        "expired": false
+			        	"endTime": new Date(currentDate.toString()).setMinutes(new Date(currentDate.toString()).getMinutes() + (8 - 1)).toString(),
+			        	"endDormancyTime": new Date(currentDate.toString()).setMinutes(new Date(currentDate.toString()).getMinutes() + (8 - 1)).toString(),
+				        "expired": false,
+				        "voterIsDormant": false
 			    	  },
 				      {
-			        	"starttime": new Date(currentDate.toString()).setMinutes(new Date(currentDate.toString()).getMinutes() - 2).toString(),
+			        	"startTime": new Date(currentDate.toString()).setMinutes(new Date(currentDate.toString()).getMinutes() - 2).toString(),
 				        "value": 6,
 			    	    "voterId": VOTED_OLDER_VOTERID,
-			        	"endtime": new Date(currentDate.toString()).setMinutes(new Date(currentDate.toString()).getMinutes() + (6 - 2)).toString(),
-				        "expired": true
+			        	"endTime": new Date(currentDate.toString()).setMinutes(new Date(currentDate.toString()).getMinutes() + (6 - 2)).toString(),
+			        	"endDormancyTime": new Date(currentDate.toString()).setMinutes(new Date(currentDate.toString()).getMinutes() + (6 - 2)).toString(),
+				        "expired": true,
+				        "voterIsDormant": true
 			    	  }
 				    ]
 		 		});
@@ -74,11 +79,13 @@ describe('candidatelogic', function() {
 				    	"value": 0,
 				    	"votes": [
 					      {
-				        	"starttime": currentDate.toString(),
+				        	"startTime": currentDate.toString(),
 					        "value": .1,
 				    	    "voterId": VOTED_VOTERID,
-				        	"endtime": new Date(currentDate.toString()).setSeconds(new Date(currentDate.toString()).getSeconds() + (0.1 * 60)).toString(),
-					        "expired": false
+				        	"endTime": new Date(currentDate.toString()).setSeconds(new Date(currentDate.toString()).getSeconds() + (0.1 * 60)).toString(),
+				        	"endDormancyTime": new Date(currentDate.toString()).setSeconds(new Date(currentDate.toString()).getSeconds() + (0.1 * 60)).toString(),
+					        "expired": false,
+					        "voterIsDormant": true
 				    	  }
 					    ]
 					});
@@ -94,7 +101,6 @@ describe('candidatelogic', function() {
 		mongoose.models.candidate.remove ( { 
 				"name" : { $in: ["Dee Ellis", "Fulton Grunge", "Hudson Ivers", "Jasjit Kleegle"] }} , 
 			function (error, result) {
-			console.log('after')
 			done();
 		});
 	});

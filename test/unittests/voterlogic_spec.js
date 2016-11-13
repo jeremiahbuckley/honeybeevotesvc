@@ -10,6 +10,8 @@ var bizVoter = new bzVoter();
 var VOTED_VOTERID = mongoose.Types.ObjectId();
 var VOTED_EXPIRED_VOTERID = mongoose.Types.ObjectId();
 var DID_NOT_VOTE_VOTERID = mongoose.Types.ObjectId();
+var currentDate = new Date();
+var currentDateStr = currentDate.toString();
 
 describe('voterlogic', function() {
 
@@ -17,24 +19,27 @@ describe('voterlogic', function() {
 
 
 	beforeEach(function(done) {
-		console.log('before');
 		var c = new mongoose.models.candidate(  {
 	    	"name": "Dee Ellis",
 	    	"value": 0,
 	    	"votes": [
 		      {
-	        	"starttime": "2016-10-09T20:54:19.797Z",
+	        	"startTime": currentDate.toString(),
 		        "value": 8,
 	    	    "voterId": VOTED_VOTERID,
-	        	"endtime": "2016-10-09T21:02:19.797Z",
-		        "expired": false
+	        	"endTime": new Date(currentDate.toString()).setMinutes(new Date(currentDate.toString()).getMinutes() + 8).toString(),
+	        	"endDormancyTime": new Date(currentDate.toString()).setMinutes(new Date(currentDate.toString()).getMinutes() + 8).toString(),
+		        "expired": false,
+		        "voterIsDormant": false
 	    	  },
 		      {
-	        	"starttime": "2016-10-09T10:54:19.797Z",
+	        	"startTime": new Date(currentDate.toString()).setMinutes(new Date(currentDate.toString()).getMinutes() - 30).toString(),
 		        "value": 8,
 	    	    "voterId": VOTED_EXPIRED_VOTERID,
-	        	"endtime": "2016-10-09T11:02:19.797Z",
-		        "expired": true
+	        	"endTime": new Date(currentDate.toString()).setMinutes(new Date(currentDate.toString()).getMinutes() - 22).toString(),
+	        	"endDormancyTime": new Date(currentDate.toString()).setMinutes(new Date(currentDate.toString()).getMinutes() -22).toString(),
+		        "expired": true,
+		        "voterIsDormant": true
 	    	  }
 		    ]
  		});
@@ -43,7 +48,6 @@ describe('voterlogic', function() {
 
 	afterEach(function(done) {
 		mongoose.models.candidate.remove ( { "name" :  "Dee Ellis" } , function (error, result) {
-			console.log('after')
 			done();
 		});
 	});

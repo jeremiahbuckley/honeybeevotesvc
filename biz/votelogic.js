@@ -8,8 +8,8 @@ module.exports = function() {
 		if (asOfTime == undefined) {
 			asOfTime = new Date();
 		}
-		var startTime = new Date(vote.starttime);
-		var endTime = new Date(vote.endtime);
+		var startTime = new Date(vote.startTime);
+		var endTime = new Date(vote.endTime);
 		var sTdifference = asOfTime.getTime() - startTime.getTime();
 		var eTdifference = asOfTime.getTime() - endTime.getTime();
 		// console.log('asOfTime: ' + asOfTime.toString());
@@ -33,7 +33,7 @@ module.exports = function() {
 				candidates.forEach( function (candidate) {
 					candidate.votes.forEach( function(vote) {
 						var needSave = false;
-						if (!vote.expired) {
+						if (!vote.expired || vote.voterIsDormant) {
 							// console.log("Vote to fix: " + vote);
 							if (logic.checkAndExpireVote(vote, now)) {
 								needSave = true;
@@ -46,43 +46,80 @@ module.exports = function() {
 								}
 							});
 						}
-
 					})
 				});
 			}
 		});
 	}
 
-	logic.checkAndExpireVote = function(vote, expireTime) {
-		if (expireTime == undefined) {
-			expireTime = new Date();
+	logic.checkAndExpireVote = function(vote, testTime) {
+		if (testTime == undefined) {
+			testTime = new Date();
 		}
-		vote.expired = false;
 
-		if (vote.endtime.getTime() < expireTime.getTime()) {
+		var needSave = false;
+		// console.log(vote);
+		// console.log(testTime);
+		if (vote.endTime.getTime() < testTime.getTime()) {
 			// console.log("Expired: " + vote._id);
 			vote.expired = true;
-			return true;
+			needSave = true;
 		} else {
-			// console.log("Not-expired: " + vote._id);
-			return false;
+			if (testTime.getTime() < vote.startTime.getTime()) {
+				// console.log("Expired: " + vote._id);
+				vote.expired = true;
+				needSave = true;
+			} else {
+				// console.log("Not-expired: " + vote._id);
+				vote.expired = false;
+			}
 		}
+
+		if (vote.endDormancyTime == null || vote.endDormancyTime == undefined) {
+			if (vote.endTime == null || vote.endTime == undefined) {
+				vote.endDormancyTime = new Date(vote.startTime.getTime());
+				needSave = true;
+			} else {
+				vote.endDormancyTime = new Date(vote.endTime.getTime());
+				needSave = true;
+			}
+		}
+
+		if (vote.endDormancyTime.getTime() < testTime.getTime()) {
+			// console.log("voter active: " + vote._id);
+			vote.voterIsDormant = false;
+			needSave = true;
+		} else {
+			if (testTime.getTime() < vote.startTime.getTime()) {
+				// console.log("voter active: " + vote._id);
+				vote.voterIsDormant = false;
+				needSave = true;
+			} else {
+				// console.log("voter dormant: " + vote._id);
+				vote.voterIsDormant = true;
+			}
+		}
+
+		return needSave;
 	}
 
-	logic.setVoteEndtime = function(vote) {
-		vote.endtime = new Date(vote.starttime.getTime());
-		vote.endtime.setMinutes(vote.endtime.getMinutes() + vote.value);
+	logic.setVoteEndtimes = function(vote, election) {
+		vote.endTime = new Date(vote.startTime.getTime());
+		vote.endDormancyTime = new Date(vote.startTime.getTime());
+
+		vote.endTime.setMinutes(vote.endTime.getMinutes() + election.voteSustainDuration);
+		vote.endDormancyTime.setMinutes(vote.endDormancyTime.getMinutes() + election.voterDormancyDuration);
 	}
 
 	logic.setVoteStartTimeIfNull = function(vote) {
-		if (!vote.starttime) {
-			vote.starttime = new Date();
+		if (!vote.startTime) {
+			vote.startTime = new Date();
 		}
 	}
 
-	logic.setEndtimeAndExpired = function(vote) {
+	logic.setEndtimeAndExpired = function(vote, election) {
 		this.setVoteStartTimeIfNull(vote);
-		this.setVoteEndtime(vote);
+		this.setVoteEndtimes(vote, election);
 		this.checkAndExpireVote(vote);
 	}
 

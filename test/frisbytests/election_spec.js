@@ -4,10 +4,12 @@ var mongoose = require('mongoose');
 var tc = require('../config/test_config');
 var dbConfig = require('../config/db');
 
+(function() {
+var testStr = "Election basic CRUD. ";
 var NAME = 'Election Main 1';
 var NAME2 = 'Election North ';
 
-frisby.create('POST election')
+frisby.create(testStr + 'POST election')
     .post(tc.url + '/elections',
       { 
         'name': NAME
@@ -20,7 +22,7 @@ frisby.create('POST election')
     .expectBodyContains('/elections/')
     .after( function( error, response, body ) {
 
-      frisby.create('PUT edit election')
+      frisby.create(testStr + 'PUT edit election')
           .put(tc.url + body,
             { 
               'name': NAME2
@@ -33,7 +35,7 @@ frisby.create('POST election')
           .expectBodyContains('/elections/')
           .after( function(error, response, body) {
 
-            frisby.create('GET elections')
+            frisby.create(testStr + 'GET elections')
                 .get(tc.url + body)
                 .inspectBody()
                 .expectStatus(200)
@@ -43,7 +45,7 @@ frisby.create('POST election')
                     'name': NAME2
                   })
                 .afterJSON ( function (json) {
-                  frisby.create('DELETE elections')
+                  frisby.create(testStr + 'DELETE elections')
                       .delete(tc.url + '/elections/' + json._id)
                       .inspectBody()
                       .expectStatus(200)
@@ -54,67 +56,15 @@ frisby.create('POST election')
           .toss();
     })
     .toss();
+})();
 
-var electionIdUrl2;
-var electionId2;
-var candidateId = mongoose.Types.ObjectId();
-frisby.create('POST election')
-    .post(tc.url + '/elections',
-      { 
-        'name': NAME
-      },
-      { json: true },
-      { headers: { 'Content-Type': 'application/json' }})
-    .inspectBody()
-    .expectStatus(201)
-    .expectHeader('Content-Type', 'text/html; charset=utf-8')
-    .expectBodyContains('/elections/')
-    .after( function( error, response, body ) {
-
-      electionIdUrl2 = body;
-      electionId2 = body.substring('/elections/'.length);
-
-      frisby.create('POST add candidates to election')
-          .post(tc.url + "/elections/candidateid/",
-            {
-              'id': electionId2,
-              'candidateid' : candidateId.toString()
-            }, 
-            { json: true },
-            { headers: { 'Content-Type': 'application/json' }})
-          .inspectBody()
-          .expectStatus(200)
-          .expectHeader('Content-Type', 'text/html; charset=utf-8')
-          .expectBodyContains('/elections/')
-          .after( function(error, response, body) {
-
-            frisby.create('GET elections with candidates')
-                .get(tc.url + electionIdUrl2)
-                .inspectBody()
-                .expectStatus(200)
-                .expectHeader('Content-Type', 'application/json; charset=utf-8')
-                .expectJSON(
-                  { 
-                    'name': NAME,
-                    'candidateIds': [ candidateId.toString() ]
-                  })
-                .afterJSON ( function (json) {
-                  frisby.create('DELETE elections with candidates')
-                      .delete(tc.url + electionIdUrl2)
-                      .inspectBody()
-                      .expectStatus(200)
-                      .toss();
-                })
-                .toss();
-         })
-          .toss();
-    })
-    .toss();
-
+(function() {
+var testStr = "Election add Candidate. ";
+var NAME = 'Election Main 1';
 var electionIdUrl;
-var voterId = mongoose.Types.ObjectId();
-var electionId3;
-frisby.create('POST election')
+var electionId;
+var candidateId = mongoose.Types.ObjectId();
+frisby.create(testStr + 'POST election')
     .post(tc.url + '/elections',
       { 
         'name': NAME
@@ -128,13 +78,13 @@ frisby.create('POST election')
     .after( function( error, response, body ) {
 
       electionIdUrl = body;
-      electionId3 = body.substring('/elections/'.length);
+      electionId = body.substring('/elections/'.length);
 
-      frisby.create('POST add voters to election')
-          .post(tc.url + "/elections/voterid/",
+      frisby.create(testStr + 'POST add candidates to election')
+          .post(tc.url + "/elections/candidateid/",
             {
-              'id': electionId3,
-              'voterid' : voterId.toString()
+              'id': electionId,
+              'candidateid' : candidateId.toString()
             }, 
             { json: true },
             { headers: { 'Content-Type': 'application/json' }})
@@ -144,7 +94,7 @@ frisby.create('POST election')
           .expectBodyContains('/elections/')
           .after( function(error, response, body) {
 
-            frisby.create('GET elections with voters')
+            frisby.create(testStr + 'GET elections with candidates')
                 .get(tc.url + electionIdUrl)
                 .inspectBody()
                 .expectStatus(200)
@@ -152,10 +102,10 @@ frisby.create('POST election')
                 .expectJSON(
                   { 
                     'name': NAME,
-                    'voterIds': [ voterId.toString() ]
+                    'candidateIds': [ candidateId.toString() ]
                   })
                 .afterJSON ( function (json) {
-                  frisby.create('DELETE elections with voters')
+                  frisby.create(testStr + 'DELETE elections with candidates')
                       .delete(tc.url + electionIdUrl)
                       .inspectBody()
                       .expectStatus(200)
@@ -166,6 +116,64 @@ frisby.create('POST election')
           .toss();
     })
     .toss();
+})();
 
+(function() {
+var testStr = "Election add Voter. ";
+var NAME = 'Election Main 1';
+var electionIdUrl;
+var voterId = mongoose.Types.ObjectId();
+var electionId;
+frisby.create(testStr + 'POST election')
+    .post(tc.url + '/elections',
+      { 
+        'name': NAME
+      },
+      { json: true },
+      { headers: { 'Content-Type': 'application/json' }})
+    .inspectBody()
+    .expectStatus(201)
+    .expectHeader('Content-Type', 'text/html; charset=utf-8')
+    .expectBodyContains('/elections/')
+    .after( function( error, response, body ) {
 
+      electionIdUrl = body;
+      electionId = body.substring('/elections/'.length);
 
+      frisby.create(testStr + 'POST add voters to election')
+          .post(tc.url + "/elections/voterid/",
+            {
+              'id': electionId,
+              'voterid' : voterId.toString()
+            }, 
+            { json: true },
+            { headers: { 'Content-Type': 'application/json' }})
+          .inspectBody()
+          .expectStatus(200)
+          .expectHeader('Content-Type', 'text/html; charset=utf-8')
+          .expectBodyContains('/elections/')
+          .after( function(error, response, body) {
+
+            frisby.create(testStr + 'GET elections with voters')
+                .get(tc.url + electionIdUrl)
+                .inspectBody()
+                .expectStatus(200)
+                .expectHeader('Content-Type', 'application/json; charset=utf-8')
+                .expectJSON(
+                  { 
+                    'name': NAME,
+                    'voterIds': [ voterId.toString() ]
+                  })
+                .afterJSON ( function (json) {
+                  frisby.create(testStr + 'DELETE elections with voters')
+                      .delete(tc.url + electionIdUrl)
+                      .inspectBody()
+                      .expectStatus(200)
+                      .toss();
+                })
+                .toss();
+         })
+          .toss();
+    })
+    .toss();
+})();
