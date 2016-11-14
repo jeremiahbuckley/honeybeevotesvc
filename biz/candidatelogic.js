@@ -16,7 +16,7 @@ module.exports = function() {
 	logic.calculateCandidateValueAsOfTime = function(candidatename, datetime, callback) {
 		mongoose.models.candidate.findOne( { name: candidatename}, function (error, candidate) {
 			if (error) {
-				callback(error);
+				return callback(error);
 			} else {
 				// console.log(candidate);
 				// console.log("datetime: " + datetime);
@@ -29,9 +29,9 @@ module.exports = function() {
 						});
 					}
 				} catch(err) {
-					callback(err);
+					return callback(err);
 				}
-				callback(null, value);
+				return callback(null, value);
 			}
 		} );
 	};

@@ -28,7 +28,22 @@ module.exports = function(grunt) {
                 src: ['test/unittests/*.js']
             }
         },
-		'node-inspector': {
+    	shell: {
+        	target: {
+            	command: 'node ./test/config/setup_tests.js; ./node_modules/jasmine-node/bin/jasmine-node ./test/frisbytests'
+        	}
+        },
+        jasmine_node: {
+			options: {
+				forceExit: true,
+				match: '.',
+				matchall: false,
+				extensions: 'js',
+				specNameMatcher: 'spec'
+			},
+			all: ['test/frisbytests/*']
+		},
+  		'node-inspector': {
 			custom: {
 				options: {
 					// 'web-port' : 1667
@@ -75,13 +90,16 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-nodemon');
 	grunt.loadNpmTasks('grunt-contrib-watch');
 	grunt.loadNpmTasks('grunt-babel');
+	grunt.loadNpmTasks('grunt-shell');
 	grunt.loadNpmTasks('grunt-eslint');
 	grunt.loadNpmTasks('grunt-node-inspector');
     grunt.loadNpmTasks('grunt-mocha-test');
-
+    grunt.loadNpmTasks('grunt-jasmine-node');
+ 
 	// Default task(s).
 	grunt.registerTask('lint', ['eslint']);
 	grunt.registerTask('default', ['babel', 'nodemon']);
+	grunt.registerTask('test', ['mochaTest', 'shell']); // , 'jasmine_node']);
 	grunt.registerTask('basic', ['nodemon']);
 
 };

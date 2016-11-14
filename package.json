@@ -32,8 +32,10 @@
     "grunt-contrib-uglify": "^2.0.0",
     "grunt-contrib-watch": "^1.0.0",
     "grunt-eslint": "^19.0.0",
+    "grunt-jasmine-node": "^0.3.1",
     "grunt-mocha-test": "^0.13.2",
     "grunt-nodemon": "^0.4.2",
+    "grunt-shell": "^2.1.0",
     "mocha": "^3.1.0",
     "node-inspector": "^0.12.8"
   }

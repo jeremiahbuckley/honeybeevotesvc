@@ -24,7 +24,8 @@ module.exports = function() {
 	}
 
 	logic.expireVotes = function() {
-		mongoose.models.candidate.find( { 'votes.expired': false }, function(error, candidates) {
+		mongoose.models.candidate.find( {$or: [{ 'votes.expired': false }, {'votes.voterIsDormant': true}]}, 
+			function(error, candidates) {
 			if (error) {
 				console.log(error.message);
 			} else {

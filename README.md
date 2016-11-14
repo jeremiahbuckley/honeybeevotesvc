@@ -25,18 +25,16 @@
 - Mongo: currently this expects mongo to be on the default port ('mongodb://localhost:27017/honeybeevote')
 - Mongoose: I have a fair understanding of this, at this point.
 - Express: on startup it should print out the port for express "The Magic happens on port: [0-9]*" (default: 8000)
-- Test setup: this cmd from the root directory: node ./test/frisbytests/setup_tests.js
-- Jasmine:
-   - if you have jasmine installed globally, this will probably work: jasmine ./test/frisbytests/
-   - if you don't have global install, this will work: node ./node_modules/jasmine-node/bin/jasmine-node ./test/frisbytests/
-- Mocha: if you do not have mocha installed locally, use this: 
-   - if you have mocha installed globally, this will probably work: mocha ./test/unittests/
-   - if you don't have global install, this will work: node ./node_modules/mocha/bin/mocha ./test/unittests/
-   - you can also run mocha from grunt using 'grunt mochaTest'
+- Testing: run "grunt default" in one cmd window, then elsewhere run "grunt test". will run unit and api tests.
+   - Unit tests:
+      - "grunt mochaTest"
+   - Api tests:
+      - "grunt shell"
+      - "grunt jasmine_node"
 - ESLint: to run lint, use this: grunt lint
 - Grunt: I don't know half of what's in here, really, just following recipes.
-	I know: eslint, nodemon, concurrent
-	I don't know: pkg, babel
+	- I know: eslint, nodemon, concurrent
+	- I don't know: pkg, babel
 - Passport: just barely "heartbeats" as in does basic validation. The validation isn't actually applied anywhere or required.
 - The whole thing could have better logging and .config
 - Functionality: you should be able to do basic CRUD on Election, Voter, Candidate, and Candidate-[Votes]

@@ -10,6 +10,7 @@ var candidate_with_no_votes = "Dee Elliis";
 var candidate_with_one_vote = "Fulton Grunge";
 var candidate_with_many_votes = "Hudson Ivers"
 var candidate_with_expiring_vote = "Jasjit Kleegle";
+var testElection = "testElection";
 var VOTED_VOTERID = mongoose.Types.ObjectId();
 var VOTED_OLDER_VOTERID = mongoose.Types.ObjectId();
 var DID_NOT_VOTE_VOTERID = mongoose.Types.ObjectId();
@@ -27,81 +28,95 @@ describe('candidatelogic', function() {
 
 
 	before('before tests', function(done) {
-		var c = new mongoose.models.candidate(  {
-	    	"name": "Dee Ellis",
-	    	"value": 0,
-	    	"votes": []
- 		});
-		c.save(function(err, result) {
-			c = new mongoose.models.candidate(  {
-		    	"name": "Fulton Grunge",
+		var electionId;
+		var e = new mongoose.models.election( {
+			name: testElection,
+			winThreshhold: 100,
+			voteSustainDuration: 5,
+			voterDormancyDuration: 8
+		});
+		e.save(function (err, result) {
+			electionId = result._id;
+			var c = new mongoose.models.candidate(  {
+		    	"name": candidate_with_no_votes,
 		    	"value": 0,
-		    	"votes": [
-			      {
-		        	"startTime": currentDate.toString(),
-			        "value": 10,
-		    	    "voterId": VOTED_VOTERID,
-		        	"endTime": new Date(currentDate.toString()).setMinutes(new Date(currentDate.toString()).getMinutes() + 10).toString(),
-		        	"endDormancyTime": new Date(currentDate.toString()).setMinutes(new Date(currentDate.toString()).getMinutes() + 10).toString(),
-			        "expired": false,
-			        "voterIsDormant": false
-		    	  }
-			    ]
+		    	"votes": []
 	 		});
-			c.save(function (err, result) {
-				var c = new mongoose.models.candidate(  {
-			    	"name": "Hudson Ivers",
+			c.save(function(err, result) {
+				c = new mongoose.models.candidate(  {
+			    	"name": candidate_with_one_vote,
 			    	"value": 0,
 			    	"votes": [
 				      {
-			        	"startTime": new Date(currentDate.toString()).setMinutes(new Date(currentDate.toString()).getMinutes() - 1).toString(),
-				        "value": 8,
+			        	"startTime": currentDate.toString(),
+				        "value": 10,
 			    	    "voterId": VOTED_VOTERID,
-			        	"endTime": new Date(currentDate.toString()).setMinutes(new Date(currentDate.toString()).getMinutes() + (8 - 1)).toString(),
-			        	"endDormancyTime": new Date(currentDate.toString()).setMinutes(new Date(currentDate.toString()).getMinutes() + (8 - 1)).toString(),
+			    	    "electionId": electionId,
+			        	"endTime": new Date(currentDate.toString()).setMinutes(new Date(currentDate.toString()).getMinutes() + 10).toString(),
+			        	"endDormancyTime": new Date(currentDate.toString()).setMinutes(new Date(currentDate.toString()).getMinutes() + 10).toString(),
 				        "expired": false,
 				        "voterIsDormant": false
-			    	  },
-				      {
-			        	"startTime": new Date(currentDate.toString()).setMinutes(new Date(currentDate.toString()).getMinutes() - 2).toString(),
-				        "value": 6,
-			    	    "voterId": VOTED_OLDER_VOTERID,
-			        	"endTime": new Date(currentDate.toString()).setMinutes(new Date(currentDate.toString()).getMinutes() + (6 - 2)).toString(),
-			        	"endDormancyTime": new Date(currentDate.toString()).setMinutes(new Date(currentDate.toString()).getMinutes() + (6 - 2)).toString(),
-				        "expired": true,
-				        "voterIsDormant": true
 			    	  }
 				    ]
 		 		});
-				c.save(function(err, result) {
-					var c = new mongoose.models.candidate( {
-				    	"name": "Jasjit Kleegle",
+				c.save(function (err, result) {
+					var c = new mongoose.models.candidate(  {
+				    	"name": candidate_with_many_votes,
 				    	"value": 0,
 				    	"votes": [
 					      {
-				        	"startTime": currentDate.toString(),
-					        "value": .1,
+				        	"startTime": new Date(currentDate.toString()).setMinutes(new Date(currentDate.toString()).getMinutes() - 1).toString(),
+					        "value": 8,
 				    	    "voterId": VOTED_VOTERID,
-				        	"endTime": new Date(currentDate.toString()).setSeconds(new Date(currentDate.toString()).getSeconds() + (0.1 * 60)).toString(),
-				        	"endDormancyTime": new Date(currentDate.toString()).setSeconds(new Date(currentDate.toString()).getSeconds() + (0.1 * 60)).toString(),
+				    	    "electionId": electionId,
+				        	"endTime": new Date(currentDate.toString()).setMinutes(new Date(currentDate.toString()).getMinutes() + (8 - 1)).toString(),
+				        	"endDormancyTime": new Date(currentDate.toString()).setMinutes(new Date(currentDate.toString()).getMinutes() + (8 - 1)).toString(),
 					        "expired": false,
+					        "voterIsDormant": false
+				    	  },
+					      {
+				        	"startTime": new Date(currentDate.toString()).setMinutes(new Date(currentDate.toString()).getMinutes() - 2).toString(),
+					        "value": 6,
+				    	    "voterId": VOTED_OLDER_VOTERID,
+				    	    "electionId": electionId,
+				        	"endTime": new Date(currentDate.toString()).setMinutes(new Date(currentDate.toString()).getMinutes() + (6 - 2)).toString(),
+				        	"endDormancyTime": new Date(currentDate.toString()).setMinutes(new Date(currentDate.toString()).getMinutes() + (6 - 2)).toString(),
+					        "expired": true,
 					        "voterIsDormant": true
 				    	  }
 					    ]
+			 		});
+					c.save(function(err, result) {
+						var c = new mongoose.models.candidate( {
+					    	"name": candidate_with_expiring_vote,
+					    	"value": 0,
+					    	"votes": [
+						      {
+					        	"startTime": currentDate.toString(),
+						        "value": .1,
+					    	    "voterId": VOTED_VOTERID,
+					    	    "electionId": electionId,
+					        	"endTime": new Date(currentDate.toString()).setSeconds(new Date(currentDate.toString()).getSeconds() + (0.1 * 60)).toString(),
+					        	"endDormancyTime": new Date(currentDate.toString()).setSeconds(new Date(currentDate.toString()).getSeconds() + (0.1 * 60)).toString(),
+						        "expired": false,
+						        "voterIsDormant": true
+					    	  }
+						    ]
+						});
+						c.save(done);
 					});
-					c.save(done);
 				});
-
 			});
-
 		});
 	});
 
 	after('after tests', function(done) {
 		mongoose.models.candidate.remove ( { 
-				"name" : { $in: ["Dee Ellis", "Fulton Grunge", "Hudson Ivers", "Jasjit Kleegle"] }} , 
+				"name" : { $in: [candidate_with_no_votes, candidate_with_one_vote, candidate_with_many_votes, candidate_with_expiring_vote ] }} , 
 			function (error, result) {
-			done();
+				mongoose.models.election.remove ({name: testElection}, function(error, result) {
+					done();
+				})
 		});
 	});
 	
