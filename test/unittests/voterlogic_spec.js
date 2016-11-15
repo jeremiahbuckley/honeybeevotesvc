@@ -29,29 +29,32 @@ describe('voterlogic', function() {
 				electionId = result._id;
 				var c = new mongoose.models.candidate(  {
 			    	"name": "Dee Ellis",
-			    	"value": 0,
-			    	"votes": [
-				      {
-			        	"startTime": currentDate.toString(),
-				        "value": 8,
-			    	    "voterId": VOTED_VOTERID,
-			    	    "electionId": electionId,
-			        	"endTime": new Date(currentDate.toString()).setMinutes(new Date(currentDate.toString()).getMinutes() + 8).toString(),
-			        	"endDormancyTime": new Date(currentDate.toString()).setMinutes(new Date(currentDate.toString()).getMinutes() + 8).toString(),
-				        "expired": false,
-				        "voterIsDormant": true
-			    	  },
-				      {
-			        	"startTime": new Date(currentDate.toString()).setMinutes(new Date(currentDate.toString()).getMinutes() - 30).toString(),
-				        "value": 8,
-			    	    "voterId": VOTED_EXPIRED_VOTERID,
-			    	    "electionId": electionId,
-			        	"endTime": new Date(currentDate.toString()).setMinutes(new Date(currentDate.toString()).getMinutes() - 22).toString(),
-			        	"endDormancyTime": new Date(currentDate.toString()).setMinutes(new Date(currentDate.toString()).getMinutes() -22).toString(),
-				        "expired": true,
-				        "voterIsDormant": false
-			    	  }
-				    ]
+			    	"candidateElections": [
+			    		{
+			    			electionId: electionId,
+			    			value: 0,
+					    	"votes": [
+						      {
+					        	"startTime": currentDate.toString(),
+						        "value": 8,
+					    	    "voterId": VOTED_VOTERID,
+					        	"endTime": new Date(currentDate.toString()).setMinutes(new Date(currentDate.toString()).getMinutes() + 8).toString(),
+					        	"endDormancyTime": new Date(currentDate.toString()).setMinutes(new Date(currentDate.toString()).getMinutes() + 8).toString(),
+						        "expired": false,
+						        "voterIsDormant": true
+					    	  },
+						      {
+					        	"startTime": new Date(currentDate.toString()).setMinutes(new Date(currentDate.toString()).getMinutes() - 30).toString(),
+						        "value": 8,
+					    	    "voterId": VOTED_EXPIRED_VOTERID,
+					        	"endTime": new Date(currentDate.toString()).setMinutes(new Date(currentDate.toString()).getMinutes() - 22).toString(),
+					        	"endDormancyTime": new Date(currentDate.toString()).setMinutes(new Date(currentDate.toString()).getMinutes() -22).toString(),
+						        "expired": true,
+						        "voterIsDormant": false
+					    	  }
+						    ]
+			    		}
+			    	]
 		 		});
 				c.save(done);
 			});

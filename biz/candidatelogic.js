@@ -9,31 +9,27 @@ module.exports = function() {
 
 	var logic = {};
 
-	logic.calculateCandidateValue = function(candidatename, callback) {
-		return logic.calculateCandidateValueAsOfTime(candidatename, new Date(), callback);
+	logic.calculateCandidateElectionValues = function(candidate, callback) {
+		return logic.calculateCandidateElectionValuesAsOfTime(candidate, new Date(), callback);
 	};
 
-	logic.calculateCandidateValueAsOfTime = function(candidatename, datetime, callback) {
-		mongoose.models.candidate.findOne( { name: candidatename}, function (error, candidate) {
-			if (error) {
-				return callback(error);
-			} else {
-				// console.log(candidate);
-				// console.log("datetime: " + datetime);
-				var value = 0.0;
-				try {
-					if (candidate != null) {
-						candidate.votes.forEach( function(current) {
-							var vval = bizVote.voteValue(current, datetime);
-							value = value + vval;
-						});
-					}
-				} catch(err) {
-					return callback(err);
-				}
-				return callback(null, value);
+	logic.calculateCandidateElectionValuesAsOfTime = function(candidate, datetime, callback) {
+		try {
+			if (candidate != null) {
+				candidate.candidateElections.forEach(function(candidateElection) {
+					var value = 0.0;
+					candidateElection.votes.forEach( function(vote) {
+						const vval = bizVote.voteValue(vote, datetime);
+						value = value + vval;
+					});
+					candidateElection.value = value;
+				});
+				candidate.save();
 			}
-		} );
+		} catch (err) {
+			return callback(err);
+		}
+		return callback();
 	};
 
 	logic.recalcAllCandidates = function( callback ) {
@@ -42,22 +38,13 @@ module.exports = function() {
 				callback(error);
 			} else {
 				async.each(candidates, 
-					function(item, cb) {
-						logic.calculateCandidateValue(item.name, 
-							function(err, candidateValue) {
+					function(candidate, cb) {
+						logic.calculateCandidateElectionValues(candidate, 
+							function(err, result) {
 								if (err != null || err != undefined){
 									cb(err);
 								} else {
-									mongoose.models.candidate.findOneAndUpdate( { name: item.name }, 
-										{ value: candidateValue }, 
-										{},
-										function (error) {
-											if (error) {
-												cb(error);
-											} else {
-												cb();
-											}
-										});
+									cb();
 								}
 							});
 					}, 

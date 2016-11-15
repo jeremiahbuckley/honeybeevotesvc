@@ -8,11 +8,7 @@ function makeSchema() {
 			type: String,
 			required: true
 		},
-		value: {
-			type: Number, 
-			required: true
-		},
-		votes: [mongoose.model('vote').schema]
+		candidateElections: [mongoose.model('candidateElection').schema]
 	});
     schema.virtual('links').get(function () {
         /* TODO: These should be absolute URIs */
@@ -22,8 +18,8 @@ function makeSchema() {
                 "href": "/candidates/" + this._id
             },
             {
-                "rel": "votes",
-                "href": "/candidates/" + this._id + "/votes"
+                "rel": "elections",
+                "href": "/candidates/" + this._id + "/elections"
             },
         ];
     });

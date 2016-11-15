@@ -8,7 +8,7 @@ module.exports = function() {
 			var v = voterid;
 			voterid = mongoose.Type.ObjectId(v);
 		}
-		mongoose.models.candidate.findOne( { votes: { $elemMatch: {voterId: voterid, voterIsDormant: true }} }, 
+		mongoose.models.candidate.findOne( { "candidateElections.votes": { $elemMatch: {voterId: voterid, voterIsDormant: true }} }, 
 			function (error, result) {
 				if (error != null || error != undefined) {
 					callback(error, null);

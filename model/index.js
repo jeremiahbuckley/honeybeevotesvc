@@ -12,6 +12,7 @@ else {
 }
 
 mongoose.connect(mongourl);
+mongoose.Promise = require('bluebird');
 var db = mongoose.connection;
 
 var sm = {};

@@ -8,10 +8,6 @@ function makeSchema() {
 			type: mongoose.Schema.Types.ObjectId,
 			required: true
 		},
-		electionId: {
-			type: mongoose.Schema.Types.ObjectId,
-			required: true
-		},
 		value: {
 			type: Number,
 			required: true
