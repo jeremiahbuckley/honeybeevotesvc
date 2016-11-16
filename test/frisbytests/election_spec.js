@@ -8,11 +8,17 @@ var dbConfig = require('../config/db');
 var testStr = "Election basic CRUD. ";
 var NAME = 'Election Main 1';
 var NAME2 = 'Election North ';
+var winThreshhold = 175;
+var voteSustainDuration = 15;
+var voterDormancyDuration = 3;
 
 frisby.create(testStr + 'POST election')
     .post(tc.url + '/elections',
       { 
-        'name': NAME
+        'name': NAME,
+        'winThreshhold': winThreshhold,
+        'voteSustainDuration': voteSustainDuration,
+        'voterDormancyDuration': voterDormancyDuration
       },
       { json: true },
       { headers: { 'Content-Type': 'application/json' }})
@@ -64,10 +70,17 @@ var NAME = 'Election Main 1';
 var electionIdUrl;
 var electionId;
 var candidateId = mongoose.Types.ObjectId();
+var winThreshhold = 175;
+var voteSustainDuration = 15;
+var voterDormancyDuration = 3;
+
 frisby.create(testStr + 'POST election')
     .post(tc.url + '/elections',
       { 
-        'name': NAME
+        'name': NAME,
+        'winThreshhold': winThreshhold,
+        'voteSustainDuration': voteSustainDuration,
+        'voterDormancyDuration': voterDormancyDuration
       },
       { json: true },
       { headers: { 'Content-Type': 'application/json' }})
@@ -123,10 +136,17 @@ var NAME = 'Election Main 1';
 var electionIdUrl;
 var voterId = mongoose.Types.ObjectId();
 var electionId;
+var winThreshhold = 175;
+var voteSustainDuration = 15;
+var voterDormancyDuration = 3;
+
 frisby.create(testStr + 'POST election')
     .post(tc.url + '/elections',
       { 
-        'name': NAME
+        'name': NAME,
+        'winThreshhold': winThreshhold,
+        'voteSustainDuration': voteSustainDuration,
+        'voterDormancyDuration': voterDormancyDuration
       },
       { json: true },
       { headers: { 'Content-Type': 'application/json' }})
