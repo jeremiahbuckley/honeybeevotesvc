@@ -47,14 +47,14 @@ module.exports = function() {
 	});
 
 	// candidate - elections - votes
-	router.get('/:candidateid/elections/:electionid/votes', function(req, res) {
-		getVotes(req, res, null, { _id: req.params.candidateid, "candidateElections.electionId" : req.params.electionid }, req.params.electionid);
+	router.get('/:candidateId/elections/:electionId/votes', function(req, res) {
+		getVotes(req, res, null, { _id: req.params.candidateId, "candidateElections.electionId" : req.params.electionId }, req.params.electionId);
 	});
 
-	router.get('/:candidateid/elections/:electionid/votes/:id', function(req, res) {
-		getVotes(req, res, null, { _id: req.params.candidateid, 
-			candidateElections: { $elemMatch: { electionId : req.params.electionid, 
-				votes: { $elemMatch: { _id: req.params.id }} }}}, req.params.electionid, req.params.id);
+	router.get('/:candidateId/elections/:electionId/votes/:id', function(req, res) {
+		getVotes(req, res, null, { _id: req.params.candidateId, 
+			candidateElections: { $elemMatch: { electionId : req.params.electionId, 
+				votes: { $elemMatch: { _id: req.params.id }} }}}, req.params.electionId, req.params.id);
 	});
 
 	function getVotes(req, res, next, filter, electionId, voteId) {
@@ -86,14 +86,14 @@ module.exports = function() {
 		});
 	}
 
-	router.post('/:candidateid/elections/:electionid/votes', function(req, res) {
+	router.post('/:candidateId/elections/:electionId/votes', function(req, res) {
 		var vote = new mongoose.models.vote(req.body);
 		bizVoter.voterCanVote(vote.voterId, function(error, result) {
 			if (!result) {
 				res.status(500).send('Voter cannot vote until previous vote expires');
 			} else {
 
-				mongoose.models.election.findOne( { _id: req.params.electionid }, function(error, election) {
+				mongoose.models.election.findOne( { _id: req.params.electionId }, function(error, election) {
 					if (error) {
 						res.status(500).send(error);
 					} else {
@@ -101,7 +101,7 @@ module.exports = function() {
 							res.status(500).send('Cannot find election for vote.');
 						} else {
 							bizVote.setEndtimeAndExpired(vote, election);
-							mongoose.models.candidate.findOne( { _id: req.params.candidateid, "candidateElections.electionId" : req.params.electionid }, 
+							mongoose.models.candidate.findOne( { _id: req.params.candidateId, "candidateElections.electionId" : req.params.electionId }, 
 								function (error, response) {
 								if (error != null) {
 									res.status(500).send(error);
@@ -110,8 +110,8 @@ module.exports = function() {
 										res.status(404).send();
 									} else  {
 										mongoose.models.candidate.update( 
-											{ _id: req.params.candidateid, 
-											  "candidateElections.electionId" : req.params.electionid }, 
+											{ _id: req.params.candidateId, 
+											  "candidateElections.electionId" : req.params.electionId }, 
 											{
 												$push: {
 													"candidateElections.$.votes" : {
@@ -124,7 +124,7 @@ module.exports = function() {
 												if (error != null) {
 													res.status(500).send(error)
 												} else {
-													mongoose.models.candidate.findOne( { _id: req.params.candidateid }, 
+													mongoose.models.candidate.findOne( { _id: req.params.candidateId }, 
 														function (error, response) { 
 															res.status(201).send(req.originalUrl + "/" + vote._id );
 														});
@@ -142,8 +142,8 @@ module.exports = function() {
 		});
 	});
 
-	router.delete('/:candidateid/elections/:electionid/votes/:id', function(req, res) {
-		mongoose.models.candidate.findOne( { _id: req.params.candidateid, "candidateElections.electionId" : req.params.electionid }, 
+	router.delete('/:candidateId/elections/:electionId/votes/:id', function(req, res) {
+		mongoose.models.candidate.findOne( { _id: req.params.candidateId, "candidateElections.electionId" : req.params.electionId }, 
 			function (error, response) {
 			if (error != null) {
 				res.status(500).send(error);
@@ -152,7 +152,7 @@ module.exports = function() {
 					res.status(404).send();
 				} else  {
 					mongoose.models.candidate.update( 
-						{ _id: req.params.candidateid, "candidateElections.electionId" : req.params.electionid }, 
+						{ _id: req.params.candidateId, "candidateElections.electionId" : req.params.electionId }, 
 						{
 							$pull: {
 								"candidateElections.$.votes": { _id: req.params.id }
@@ -173,12 +173,12 @@ module.exports = function() {
 	});
 
 	// candidate - elections
-	router.get('/:candidateid/elections', function(req, res) {
-		getElections(req, res, null, { _id: req.params.candidateid });
+	router.get('/:candidateId/elections', function(req, res) {
+		getElections(req, res, null, { _id: req.params.candidateId });
 	});
 
-	router.get('/:candidateid/elections/:id', function(req, res) {
-		getElections(req, res, null, { _id: req.params.candidateid, "candidateElections.electionId" : req.params.id });
+	router.get('/:candidateId/elections/:id', function(req, res) {
+		getElections(req, res, null, { _id: req.params.candidateId, "candidateElections.electionId" : req.params.id });
 	});
 
 	function getElections(req, res, next, filter) {
@@ -195,9 +195,9 @@ module.exports = function() {
 		});
 	}
 
-	router.post('/:candidateid/elections', function(req, res) {
-		var candidateElection = new mongoose.models.candidateElection(req.body);
-		mongoose.models.candidate.findOne( { _id: req.params.candidateid }, function (error, response) {
+	router.post('/:candidateId/elections', function(req, res) {
+		var candidateElection = new mongoose.models.candidateElection({electionId: req.body.electionId, value: 0});
+		mongoose.models.candidate.findOne( { _id: req.params.candidateId }, function (error, response) {
 			if (error != null) {
 				res.status(500).send(error);
 			} else {
@@ -205,7 +205,7 @@ module.exports = function() {
 					res.status(404).send();
 				} else  {
 					mongoose.models.candidate.update( 
-						{ _id: response._id }, 
+						{ _id: req.params.candidateId }, 
 						{
 							$push: {
 								candidateElections : {
@@ -218,7 +218,7 @@ module.exports = function() {
 							if (error != null) {
 								res.status(500).send(error)
 							} else {
-								mongoose.models.candidate.findOne( { _id: req.params.candidateid }, 
+								mongoose.models.candidate.findOne( { _id: req.params.candidateId }, 
 									function (error, candidate) { 
 										res.status(201).send(req.originalUrl + "/" + req.body.electionId );
 									});
@@ -231,8 +231,8 @@ module.exports = function() {
 
 	});
 
-	router.delete('/:candidateid/elections/:id', function(req, res) {
-		mongoose.models.candidate.findOne( { _id: req.params.candidateid }, function (error, response) {
+	router.delete('/:candidateId/elections/:id', function(req, res) {
+		mongoose.models.candidate.findOne( { _id: req.params.candidateId }, function (error, response) {
 			if (error != null) {
 				res.status(500).send(error);
 			} else {

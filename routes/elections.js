@@ -26,12 +26,12 @@ module.exports = function() {
 		} 
 	}
 
-	router.post('/candidateid/', function(req, res) {
-		pushPullElectionParticipantIds(req, res, req.body.id, req.body.candidateid, true, true);
+	router.post('/:id/candidateid/', function(req, res) {
+		pushPullElectionParticipantIds(req, res, req.params.id, req.body.candidateId, true, true);
 	});
 
-	router.post('/voterid/', function(req, res) {
-		pushPullElectionParticipantIds(req, res, req.body.id, req.body.voterid, true, false);
+	router.post('/:id/voterid/', function(req, res) {
+		pushPullElectionParticipantIds(req, res, req.params.id, req.body.voterId, true, false);
 	});
 
 	router.post('/', function(req, res) {
@@ -75,12 +75,12 @@ module.exports = function() {
 		});
 	});
 
-	router.delete('/:id/candidateid/:candidateid', function(req, res) {
-		pushPullElectionParticipantIds(req, res, req.params.id, req.params.candidateid, false, true);
+	router.delete('/:id/candidateid/:candidateId', function(req, res) {
+		pushPullElectionParticipantIds(req, res, req.params.id, req.params.candidateId, false, true);
 	});
 
-	router.delete('/:id/voterid/:voterid', function(req, res) {
-		pushPullElectionParticipantIds(req, res, req.params.id, req.params.voterid, false, false);
+	router.delete('/:id/voterid/:voterId', function(req, res) {
+		pushPullElectionParticipantIds(req, res, req.params.id, req.params.voterId, false, false);
 	});
 
 	router.delete('/:id', function(req, res) {

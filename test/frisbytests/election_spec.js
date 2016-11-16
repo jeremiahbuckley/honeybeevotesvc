@@ -81,10 +81,9 @@ frisby.create(testStr + 'POST election')
       electionId = body.substring('/elections/'.length);
 
       frisby.create(testStr + 'POST add candidates to election')
-          .post(tc.url + "/elections/candidateid/",
+          .post(tc.url + "/elections/" + electionId + "/candidateid/",
             {
-              'id': electionId,
-              'candidateid' : candidateId.toString()
+              'candidateId' : candidateId.toString()
             }, 
             { json: true },
             { headers: { 'Content-Type': 'application/json' }})
@@ -141,10 +140,9 @@ frisby.create(testStr + 'POST election')
       electionId = body.substring('/elections/'.length);
 
       frisby.create(testStr + 'POST add voters to election')
-          .post(tc.url + "/elections/voterid/",
+          .post(tc.url + "/elections/" + electionId + "/voterid/",
             {
-              'id': electionId,
-              'voterid' : voterId.toString()
+              'voterId' : voterId.toString()
             }, 
             { json: true },
             { headers: { 'Content-Type': 'application/json' }})
