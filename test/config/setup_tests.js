@@ -1,7 +1,7 @@
 var jasmine = require('jasmine-node');
 var frisby = require('frisby');
-var tc = require('../config/test_config');
-var dbConfig = require('../config/db');
+var tc = require('./test_config');
+var dbConfig = require('./db');
 var async = require('async');
 // var mongoose = require('mongoose');
 // var dblayer = require('../../model');

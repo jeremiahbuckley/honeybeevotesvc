@@ -9,13 +9,16 @@ function makeSchema() {
 			required: true
 		},
         winThreshhold: {
-            type: Number
+            type: Number,
+            required: true
         },
         voteSustainDuration: {
-            type: Number
+            type: Number,
+            requried: true
         },
         voterDormancyDuration: {
-            type: Number
+            type: Number,
+            required: true
         },
 		candidateIds: [mongoose.Schema.Types.ObjectId],
 		voterIds: [mongoose.Schema.Types.ObjectId]

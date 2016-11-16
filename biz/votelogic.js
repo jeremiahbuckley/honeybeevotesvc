@@ -24,29 +24,33 @@ module.exports = function() {
 	}
 
 	logic.expireVotes = function() {
-		mongoose.models.candidate.find( { 'votes.expired': false }, function(error, candidates) {
+		mongoose.models.candidate.find( {$or: [{ 'candidateElections.votes.expired': false }, 
+			                                   {'candidateElections.votes.voterIsDormant': true}]}, 
+			function(error, candidates) {
 			if (error) {
 				console.log(error.message);
 			} else {
 				// console.log("Result " + candidates);
 				var now = new Date();
 				candidates.forEach( function (candidate) {
-					candidate.votes.forEach( function(vote) {
-						var needSave = false;
-						if (!vote.expired || vote.voterIsDormant) {
-							// console.log("Vote to fix: " + vote);
-							if (logic.checkAndExpireVote(vote, now)) {
-								needSave = true;
-							}
-						}
-						if (needSave) {
-							candidate.save(function (err) {
-								if (err) {
-									console.log(err.message);
+					candidate.candidateElections.forEach( function(candidateElection) {
+						candidateElection.votes.forEach( function(vote) {
+							var needSave = false;
+							if (!vote.expired || vote.voterIsDormant) {
+								// console.log("Vote to fix: " + vote);
+								if (logic.checkAndExpireVote(vote, now)) {
+									needSave = true;
 								}
-							});
-						}
-					})
+							}
+							if (needSave) {
+								candidate.save(function (err) {
+									if (err) {
+										console.log(err.message);
+									}
+								});
+							}
+						});
+					});
 				});
 			}
 		});
