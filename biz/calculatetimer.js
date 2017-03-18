@@ -1,24 +1,26 @@
 
-var bzVote = require('./votelogic.js');
-var bzCandidate = require('./candidatelogic.js');
+const bzVote = require('./votelogic.js');
+const bzCandidate = require('./candidatelogic.js');
 
-var bizVote = new bzVote();
-var bizCandidate = new bzCandidate();
-var recurrenceInSeconds = 3;
+const bizVote = new bzVote();
+const bizCandidate = new bzCandidate();
+const recurrenceInSeconds = 3;
 
-module.exports = function() {
+module.exports = function () {
+  const x = {};
 
-	var x = {};
+  x.startCalcInterval = function () {
+    setInterval(this.recalc, recurrenceInSeconds * 1000);
+  };
 
-	x.startCalcInterval = function() {
-		setInterval(this.recalc, recurrenceInSeconds * 1000)
-	};
+  x.recalc = function () {
+    console.warn('starting recalc');
+    bizVote.expireVotes();
+    bizCandidate.recalcAllCandidates(err => {
+      if (err) {
+        console.error(err);
+      }});
+  };
 
-	x.recalc = function() {
-		console.warn("starting recalc");
-		bizVote.expireVotes();
-		bizCandidate.recalcAllCandidates(function(err) { if (err) { console.error(err)}});
-	}
-
-	return x;
-}
+  return x;
+};
