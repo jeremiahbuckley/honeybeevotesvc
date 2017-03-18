@@ -14,14 +14,23 @@ module.exports = function(grunt) {
 			}
 		},		
 		eslint: {
-			target: [
-				'Gruntfile.js',
-				'biz/*.js',
-				'confit/*.js',
-				'model/*.js',
-				'routes/*.js',
-				'tests/**/*.js'
-			]
+			all: {
+				files: {
+					src: [
+						'*.js',
+						'Gruntfile.js',
+						'biz/*.js',
+						'confit/*.js',
+						'/model/*.js',
+						'routes/*.js',
+						'utils/*.js',
+						'tests/**/*.js'
+					]
+				},
+				options: {
+					config: "./.eslintrc.json"
+				}
+			}
 		},
         mochaTest: {
             test: {
