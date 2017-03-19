@@ -1,0 +1,12 @@
+{
+    "env": {
+      "node": true,
+      "es6": true
+    },
+    "extends": [
+      "xo-space/esnext"
+    ],
+    "rules": {
+      "new-cap": 0
+    }    
+}

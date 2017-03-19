@@ -1,26 +1,26 @@
-var express = require('express');
-var multer = require('multer');
-var path = require('path');
-var favicon = require('serve-favicon');
-var logger = require('morgan');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
-var mongoose = require('mongoose');
-var calctimer = require('./biz/calculatetimer.js');
-var utils = require('./utils');
-var passport = require('passport');
-var Strategy = require('passport-http').BasicStrategy;
-var authentication = require('./biz/authentication.js');
+const express = require('express');
+const multer = require('multer');
+const path = require('path');
+const favicon = require('serve-favicon');
+const logger = require('morgan');
+const cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
+const calctimer = require('./biz/calculatetimer.js');
+const utils = require('./utils');
+const passport = require('passport');
+const Strategy = require('passport-http').BasicStrategy;
+const authentication = require('./biz/authentication.js');
 
-var dblayer = require('./model');
-var app = express();
+const dblayer = require('./model');
+const app = express();
 
-var port = 8000;
+const port = 8000;
 
-var routes = require('./routes/index');
-var voters = require('./routes/voters');
-var candidates = require('./routes/candidates');
-var elections = require('./routes/elections');
+const routes = require('./routes/index');
+const voters = require('./routes/voters');
+const candidates = require('./routes/candidates');
+const elections = require('./routes/elections');
 
 console.log(app.get('env'));
 app.set('env', 'development');
@@ -30,20 +30,19 @@ console.log(app.get('env'));
 app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({extended: false}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(utils.requestTime);
 
-
 // a middleware with no mount path; gets executed for every request to the app
-app.use(function(req, res, next) {
+app.use((req, res, next) => {
   try {
-    res.setHeader("Access-Control-Allow-Origin", "*");
-    res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-    res.setHeader("Access-Control-Allow-Headers", "Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers");
-  }catch(ex) {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers');
+  } catch (ex) {
     console.log(ex);
   }
   next();
@@ -63,17 +62,17 @@ app.use('/voters', voters());
 app.use('/candidates', candidates());
 app.use('/elections', elections());
 app.get('/users',
-  passport.authenticate('basic', { session: false }),
-  function(req, res) {
-    res.json({ id: req.user.id, username: req.user.username });
+  passport.authenticate('basic', {session: false}),
+  (req, res) => {
+    res.json({id: req.user.id, username: req.user.username});
   });
 
-var calculatetimer = new calctimer();
+const calculatetimer = new calctimer();
 calculatetimer.startCalcInterval();
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  var err = new Error('Not Found');
+app.use((req, res, next) => {
+  const err = new Error('Not Found');
   err.status = 404;
   next(err);
 });
@@ -82,8 +81,8 @@ app.use(function(req, res, next) {
 
 // development error handler
 // will print stacktrace
-if (app.get('env') == 'development') {
-  app.use(function(err, req, res, next) {
+if (app.get('env') === 'development') {
+  app.use((err, req, res) => {
     res.status(err.status || 500)
     .send({
       message: err.message,
@@ -94,7 +93,7 @@ if (app.get('env') == 'development') {
 
 // production error handler
 // no stacktraces leaked to user
-app.use(function(err, req, res, next) {
+app.use((err, req, res) => {
   res.status(err.status || 500)
   .send({
     message: err.message,
