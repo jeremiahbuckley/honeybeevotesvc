@@ -16,7 +16,7 @@ function connectDB(callback) {
         assert.equal(null, err);
         reader_test_db = db;
         console.log("Connected correctly to server: " + dbConfig.testDBURL);
-        callback(0);
+        return callback(0);
     });
 }
 
@@ -29,10 +29,10 @@ function dropVoterCollection(callback) {
                 console.log(err);
             }
             console.log('voters collection dropped');
-            callback(0);
+            return callback(0);
         });
     } else {
-        callback(0);
+        return callback(0);
     }
 }
 
@@ -50,10 +50,10 @@ function dropElectionCollection(callback) {
                     console.log('had some trouble dropping elections collection')
                 }
             }
-            callback(0);
+            return callback(0);
         });
     } else {
-        callback(0);
+        return callback(0);
     }
 }
 
@@ -66,10 +66,10 @@ function dropCandidateCollection(callback) {
                 console.log(err);
             }
             console.log('candidates collection dropped');
-            callback(0);
+            return callback(0);
         });
     } else {
-        callback(0);
+        return callback(0);
     }
 }
 
@@ -106,7 +106,6 @@ function closeDB(callback) {
     reader_test_db.close(function(error, result) {
         return callback(0);
     });
-    return callback(0);
 }
 
 async.series([connectDB, dropVoterCollection, dropCandidateCollection, dropElectionCollection, addVoters, closeDB]);

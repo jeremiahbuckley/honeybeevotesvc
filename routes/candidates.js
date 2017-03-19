@@ -63,13 +63,13 @@ module.exports = function () {
         } else {
           let votes = [];
           candidate.candidateElections.forEach(election => {
-            if (election.electionId === electionId) {
+            if (election.electionId.equals(electionId)) {
               if (voteId === null || voteId === undefined) {
                 votes = election.votes;
               } else {
                 votes = [];
                 election.votes.forEach(vt => {
-                  if (vt._id === voteId) {
+                  if (vt._id.equals(voteId)) {
                     votes.push(vt);
                   }
                 });
