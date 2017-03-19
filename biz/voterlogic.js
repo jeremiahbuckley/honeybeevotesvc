@@ -13,10 +13,10 @@ module.exports = function () {
         if (error) {
           callback(error, null);
         }
-        if (result === null || result === undefined || result.length === 0) {
-          callback(null, true);
-        } else {
+        if (result) { // if voter already voted...
           callback(null, false);
+        } else {
+          callback(null, true);
         }
       });
   };

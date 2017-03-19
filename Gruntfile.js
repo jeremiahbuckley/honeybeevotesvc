@@ -42,7 +42,7 @@ module.exports = function (grunt) {
         command: 'node ./test/config/setup_tests.js; ./node_modules/jasmine-node/bin/jasmine-node ./test/frisbytests'
       }
     },
-    jasmine_node: {
+    'jasmine-node': {
       options: {
         forceExit: true,
         match: '.',

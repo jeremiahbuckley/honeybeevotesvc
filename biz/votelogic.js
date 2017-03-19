@@ -4,7 +4,7 @@ module.exports = function () {
   const logic = {};
 
   logic.voteValue = function (vote, asOfTime) {
-    if (asOfTime === undefined) {
+    if (!asOfTime) {
       asOfTime = new Date();
     }
     const startTime = new Date(vote.startTime);
@@ -55,7 +55,7 @@ module.exports = function () {
   };
 
   logic.checkAndExpireVote = function (vote, testTime) {
-    if (testTime === undefined) {
+    if (!testTime) {
       testTime = new Date();
     }
 
@@ -66,23 +66,21 @@ module.exports = function () {
       // console.log("Expired: " + vote._id);
       vote.expired = true;
       needSave = true;
+    } else if (testTime.getTime() < vote.startTime.getTime()) {
+      // console.log("Expired: " + vote._id);
+      vote.expired = true;
+      needSave = true;
     } else {
-      if (testTime.getTime() < vote.startTime.getTime()) {
-        // console.log("Expired: " + vote._id);
-        vote.expired = true;
-        needSave = true;
-      } else {
-        // console.log("Not-expired: " + vote._id);
-        vote.expired = false;
-      }
+      // console.log("Not-expired: " + vote._id);
+      vote.expired = false;
     }
 
-    if (vote.endDormancyTime === null || vote.endDormancyTime === undefined) {
-      if (vote.endTime === null || vote.endTime === undefined) {
-        vote.endDormancyTime = new Date(vote.startTime.getTime());
+    if (!vote.endDormancyTime) {
+      if (vote) {
+        vote.endDormancyTime = new Date(vote.endTime.getTime());
         needSave = true;
       } else {
-        vote.endDormancyTime = new Date(vote.endTime.getTime());
+        vote.endDormancyTime = new Date(vote.startTime.getTime());
         needSave = true;
       }
     }
@@ -91,15 +89,13 @@ module.exports = function () {
       // console.log("voter active: " + vote._id);
       vote.voterIsDormant = false;
       needSave = true;
+    } else if (testTime.getTime() < vote.startTime.getTime()) {
+      // console.log("voter active: " + vote._id);
+      vote.voterIsDormant = false;
+      needSave = true;
     } else {
-      if (testTime.getTime() < vote.startTime.getTime()) {
-        // console.log("voter active: " + vote._id);
-        vote.voterIsDormant = false;
-        needSave = true;
-      } else {
-        // console.log("voter dormant: " + vote._id);
-        vote.voterIsDormant = true;
-      }
+      // console.log("voter dormant: " + vote._id);
+      vote.voterIsDormant = true;
     }
 
     return needSave;

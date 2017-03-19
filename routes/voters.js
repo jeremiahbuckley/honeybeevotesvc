@@ -13,14 +13,12 @@ module.exports = function () {
 
   function returnGet(req, res) {
     return function (error, response) {
-      if (error === null) {
-        if (response === null || response === undefined || response.length === 0) {
-          res.status(404).send();
-        } else {
-          res.status(200).send(response);
-        }
-      } else {
+      if (error) {
         res.status(500).send(error);
+      } else if (response) {
+        res.status(200).send(response);
+      } else {
+        res.status(404).send();
       }
     };
   }
@@ -28,30 +26,28 @@ module.exports = function () {
   router.post('/', (req, res) => {
     const voter = new mongoose.models.voter(req.body);
     voter.save((error, response) => {
-      if (error === null) {
-        res.status(201).send(req.originalUrl + '/' + response._id);
-      } else {
+      if (error) {
         res.status(500).send(error);
+      } else {
+        res.status(201).send(req.originalUrl + '/' + response._id);
       }
     });
   });
 
   router.delete('/:id', (req, res) => {
     mongoose.models.voter.find({_id: req.params.id}, (error, response) => {
-      if (error === null) {
-        if (response === null || response === undefined || response.length === 0) {
-          res.status(404).send();
-        } else {
-          mongoose.models.voter.remove({_id: req.params.id}, error => {
-            if (error === null) {
-              res.status(200).send();
-            } else {
-              res.status(500).send(error);
-            }
-          });
-        }
-      } else {
+      if (error) {
         res.status(500).send(error);
+      } else if (response) {
+        mongoose.models.voter.remove({_id: req.params.id}, error => {
+          if (error) {
+            res.status(500).send(error);
+          } else {
+            res.status(200).send();
+          }
+        });
+      } else {
+        res.status(404).send();
       }
     });
   });
