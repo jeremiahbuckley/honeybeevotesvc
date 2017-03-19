@@ -1,18 +1,18 @@
 const express = require('express');
-const multer = require('multer');
+// const multer = require('multer');
 const path = require('path');
 const favicon = require('serve-favicon');
 const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
-const mongoose = require('mongoose');
+// const mongoose = require('mongoose');
 const calctimer = require('./biz/calculatetimer.js');
 const utils = require('./utils');
 const passport = require('passport');
 const Strategy = require('passport-http').BasicStrategy;
 const authentication = require('./biz/authentication.js');
 
-const dblayer = require('./model');
+const _dblayer = require('./model'); // need to load this directory to set up the mongoose models for everyone else.
 const app = express();
 
 const port = 8000;

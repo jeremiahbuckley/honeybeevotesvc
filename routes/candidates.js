@@ -14,32 +14,30 @@ module.exports = function () {
     async.map(req.body,
       (id, cb) => {
         mongoose.models.candidate.findOne({_id: id}, (error, response) => {
-          if (error === null) {
-            cb(null, response);
-          } else {
+          if (error) {
             cb(error);
+          } else {
+            cb(null, response);
           }
         });
       },
       (error, results) => {
-        if (error === null) {
-          if (results === null || results === undefined || results.length === 0) {
-            res.status(404).send();
-          } else {
-            const cleanResults = [];
-            results.forEach(result => {
-              if (result) {
-                cleanResults.push(result);
-              }
-            });
-            if (results.length === 0) {
-              res.status(404).send();
-            } else {
-              res.status(200).send(cleanResults);
+        if (error) {
+          res.status(500).send(error);
+        } else if (results) {
+          const cleanResults = [];
+          results.forEach(result => {
+            if (result) {
+              cleanResults.push(result);
             }
+          });
+          if (results) {
+            res.status(200).send(cleanResults);
+          } else {
+            res.status(404).send();
           }
         } else {
-          res.status(500).send(error);
+          res.status(404).send();
         }
       });
   });
@@ -57,29 +55,27 @@ module.exports = function () {
 
   function getVotes(req, res, next, filter, electionId, voteId) {
     mongoose.models.candidate.findOne(filter, (error, candidate) => {
-      if (error === null) {
-        if (candidate === null || candidate === undefined) {
-          res.status(404).send();
-        } else {
-          let votes = [];
-          candidate.candidateElections.forEach(election => {
-            if (election.electionId.equals(electionId)) {
-              if (voteId === null || voteId === undefined) {
-                votes = election.votes;
-              } else {
-                votes = [];
-                election.votes.forEach(vt => {
-                  if (vt._id.equals(voteId)) {
-                    votes.push(vt);
-                  }
-                });
-              }
-            }
-          });
-          res.status(200).send(votes);
-        }
-      } else {
+      if (error) {
         res.status(500).send(error);
+      } else if (candidate) {
+        let votes = [];
+        candidate.candidateElections.forEach(election => {
+          if (election.electionId.equals(electionId)) {
+            if (voteId) {
+              votes = [];
+              election.votes.forEach(vt => {
+                if (vt._id.equals(voteId)) {
+                  votes.push(vt);
+                }
+              });
+            } else {
+              votes = election.votes;
+            }
+          }
+        });
+        res.status(200).send(votes);
+      } else {
+        res.status(404).send();
       }
     });
   }
@@ -91,45 +87,41 @@ module.exports = function () {
         mongoose.models.election.findOne({_id: req.params.electionId}, (error, election) => {
           if (error) {
             res.status(500).send(error);
-          } else {
-            if (election === null || election === undefined) {
-              res.status(500).send('Cannot find election for vote.');
-            } else {
-              bizVote.setEndtimeAndExpired(vote, election);
-              mongoose.models.candidate.findOne({_id: req.params.candidateId, 'candidateElections.electionId': req.params.electionId},
-                (error, response) => {
-                  if (error === null) {
-                    if (response === null || response === undefined || response.length === 0) {
-                      res.status(404).send();
-                    } else {
-                      mongoose.models.candidate.update(
-                        {_id: req.params.candidateId,
-                          'candidateElections.electionId': req.params.electionId},
-                        {
-                          $push: {
-                            'candidateElections.$.votes': {
-                              $each: [vote]
-                            }
-                          }
-                        },
-                        {runValidators: true},
-                        error => {
-                          if (error === null) {
-                            mongoose.models.candidate.findOne({_id: req.params.candidateId},
-                              () => {
-                                res.status(201).send(req.originalUrl + '/' + vote._id);
-                              });
-                          } else {
-                            res.status(500).send(error);
-                          }
+          } else if (election) {
+            bizVote.setEndtimeAndExpired(vote, election);
+            mongoose.models.candidate.findOne({_id: req.params.candidateId, 'candidateElections.electionId': req.params.electionId},
+              (error, response) => {
+                if (error) {
+                  res.status(500).send(error);
+                } else if (response) {
+                  mongoose.models.candidate.update(
+                    {_id: req.params.candidateId,
+                      'candidateElections.electionId': req.params.electionId},
+                    {
+                      $push: {
+                        'candidateElections.$.votes': {
+                          $each: [vote]
                         }
-                      );
+                      }
+                    },
+                    {runValidators: true},
+                    error => {
+                      if (error) {
+                        res.status(500).send(error);
+                      } else {
+                        mongoose.models.candidate.findOne({_id: req.params.candidateId},
+                          () => {
+                            res.status(201).send(req.originalUrl + '/' + vote._id);
+                          });
+                      }
                     }
-                  } else {
-                    res.status(500).send(error);
-                  }
-                });
-            }
+                  );
+                } else {
+                  res.status(404).send();
+                }
+              });
+          } else {
+            res.status(500).send('Cannot find election for vote.');
           }
         });
       } else {
@@ -141,28 +133,26 @@ module.exports = function () {
   router.delete('/:candidateId/elections/:electionId/votes/:id', (req, res) => {
     mongoose.models.candidate.findOne({_id: req.params.candidateId, 'candidateElections.electionId': req.params.electionId},
       (error, response) => {
-        if (error === null) {
-          if (response === null || response === undefined || response.length === 0) {
-            res.status(404).send();
-          } else {
-            mongoose.models.candidate.update(
-              {_id: req.params.candidateId, 'candidateElections.electionId': req.params.electionId},
-              {
-                $pull: {
-                  'candidateElections.$.votes': {_id: req.params.id}
-                }
-              },
-              {runValidators: true},
-              error => {
-                if (error === null) {
-                  res.status(200).send();
-                } else {
-                  res.status(500).send(error);
-                }
-              });
-          }
-        } else {
+        if (error) {
           res.status(500).send(error);
+        } else if (response) {
+          mongoose.models.candidate.update(
+            {_id: req.params.candidateId, 'candidateElections.electionId': req.params.electionId},
+            {
+              $pull: {
+                'candidateElections.$.votes': {_id: req.params.id}
+              }
+            },
+            {runValidators: true},
+            error => {
+              if (error) {
+                res.status(500).send(error);
+              } else {
+                res.status(200).send();
+              }
+            });
+        } else {
+          res.status(404).send();
         }
       });
   });
@@ -178,14 +168,12 @@ module.exports = function () {
 
   function getElections(req, res, next, filter) {
     mongoose.models.candidate.findOne(filter, (error, candidate) => {
-      if (error === null) {
-        if (candidate === null || candidate === undefined) {
-          res.status(404).send();
-        } else {
-          res.status(200).send(candidate.candidateElections);
-        }
-      } else {
+      if (error) {
         res.status(500).send(error);
+      } else if (candidate) {
+        res.status(200).send(candidate.candidateElections);
+      } else {
+        res.status(404).send();
       }
     });
   }
@@ -193,63 +181,59 @@ module.exports = function () {
   router.post('/:candidateId/elections', (req, res) => {
     const candidateElection = new mongoose.models.candidateElection({electionId: req.body.electionId, value: 0});
     mongoose.models.candidate.findOne({_id: req.params.candidateId}, (error, response) => {
-      if (error === null) {
-        if (response === null || response === undefined || response.length === 0) {
-          res.status(404).send();
-        } else {
-          mongoose.models.candidate.update(
-            {_id: req.params.candidateId},
-            {
-              $push: {
-                candidateElections: {
-                  $each: [candidateElection]
-                }
-              }
-            },
-            {runValidators: true},
-            error => {
-              if (error === null) {
-                mongoose.models.candidate.findOne({_id: req.params.candidateI},
-                  () => {
-                    res.status(201).send(req.originalUrl + '/' + req.body.electionId);
-                  });
-              } else {
-                res.status(500).send(error);
+      if (error) {
+        res.status(500).send(error);
+      } else if (response) {
+        mongoose.models.candidate.update(
+          {_id: req.params.candidateId},
+          {
+            $push: {
+              candidateElections: {
+                $each: [candidateElection]
               }
             }
-          );
-        }
+          },
+          {runValidators: true},
+          error => {
+            if (error) {
+              res.status(500).send(error);
+            } else {
+              mongoose.models.candidate.findOne({_id: req.params.candidateI},
+                () => {
+                  res.status(201).send(req.originalUrl + '/' + req.body.electionId);
+                });
+            }
+          }
+        );
       } else {
-        res.status(500).send(error);
+        res.status(404).send();
       }
     });
   });
 
   router.delete('/:candidateId/elections/:id', (req, res) => {
     mongoose.models.candidate.findOne({_id: req.params.candidateId}, (error, response) => {
-      if (error === null) {
-        if (response === null || response === undefined || response.length === 0) {
-          res.status(404).send();
-        } else {
-          mongoose.models.candidate.update(
-            {_id: response._id},
-            {
-              $pull: {
-                candidateElections: {electionId: req.params.id}
-              }
-            },
-            {runValidators: true},
-            error => {
-              if (error === null) {
-                res.status(200).send();
-              } else {
-                res.status(500).send(error);
-              }
-            }
-          );
-        }
-      } else {
+      if (error) {
         res.status(500).send(error);
+      } else if (response) {
+        mongoose.models.candidate.update(
+          {_id: response._id},
+          {
+            $pull: {
+              candidateElections: {electionId: req.params.id}
+            }
+          },
+          {runValidators: true},
+          error => {
+            if (error) {
+              res.status(500).send(error);
+            } else {
+              res.status(200).send();
+            }
+          }
+        );
+      } else {
+        res.status(404).send();
       }
     });
   });
@@ -265,14 +249,12 @@ module.exports = function () {
 
   function returnGet(req, res) {
     return (error, response) => {
-      if (error === null) {
-        if (response === null || response === undefined || response.length === 0) {
-          res.status(404).send();
-        } else {
-          res.status(200).send(response);
-        }
-      } else {
+      if (error) {
         res.status(500).send(error);
+      } else if (response) {
+        res.status(200).send(response);
+      } else {
+        res.status(404).send();
       }
     };
   }
@@ -280,7 +262,9 @@ module.exports = function () {
   router.post('/', (req, res) => {
     const candidate = new mongoose.models.candidate(req.body);
     candidate.save((error, response) => {
-      if (error === null) {
+      if (error) {
+        res.status(500).send(error);
+      } else {
         const responseUrl = req.originalUrl + '/' + response._id;
 
         if (req.body.electionId && req.body.electionId.length > 0) {
@@ -297,65 +281,59 @@ module.exports = function () {
         } else {
           res.status(201).send(responseUrl);
         }
-      } else {
-        res.status(500).send(error);
       }
     });
   });
 
   router.put('/:id', (req, res) => {
     mongoose.models.candidate.findOne({_id: req.params.id}, (error, response) => {
-      if (error === null) {
-        if (response === null || response === undefined || response.length === 0) {
-          const candidate = new mongoose.models.candidate(req.body);
-          candidate.save((error, response) => {
-            if (error === null) {
-              res.status(201).send(req.originalUrl + '/' + response._id);
-            } else {
+      if (error) {
+        res.status(500).send(error);
+      } else if (response) {
+        mongoose.models.candidate.update({_id: response._id},
+          req.body,
+          {runValidators: true},
+          error => {
+            if (error) {
               res.status(500).send(error);
+            } else {
+              res.status(200).send(req.originalUrl);
             }
           });
-        } else {
-          mongoose.models.candidate.update({_id: response._id},
-            req.body,
-            {runValidators: true},
-            error => {
-              if (error === null) {
-                res.status(200).send(req.originalUrl);
-              } else {
-                res.status(500).send(error);
-              }
-            });
-        }
       } else {
-        res.status(500).send(error);
+        const candidate = new mongoose.models.candidate(req.body);
+        candidate.save((error, response) => {
+          if (error) {
+            res.status(500).send(error);
+          } else {
+            res.status(201).send(req.originalUrl + '/' + response._id);
+          }
+        });
       }
     });
   });
 
   router.delete('/:id', (req, res) => {
     mongoose.models.candidate.find({_id: req.params.id}, (error, response) => {
-      if (error === null) {
-        if (response === null || response === undefined || response.length === 0) {
-          res.status(404).send();
-        } else {
-          mongoose.models.candidate.remove({_id: req.params.id}, error => {
-            if (error === null) {
-              mongoose.models.election.update({candidateIds: req.params.id},
-                {$pullAll: {candidateIds: [req.params.id]}}, error => {
-                  if (error === null) {
-                    res.status(200).send();
-                  } else {
-                    res.status(500).send(error);
-                  }
-                });
-            } else {
-              res.status(500).send(error);
-            }
-          });
-        }
-      } else {
+      if (error) {
         res.status(500).send(error);
+      } else if (response) {
+        mongoose.models.candidate.remove({_id: req.params.id}, error => {
+          if (error) {
+            res.status(500).send(error);
+          } else {
+            mongoose.models.election.update({candidateIds: req.params.id},
+              {$pullAll: {candidateIds: [req.params.id]}}, error => {
+                if (error) {
+                  res.status(500).send(error);
+                } else {
+                  res.status(200).send();
+                }
+              });
+          }
+        });
+      } else {
+        res.status(404).send();
       }
     });
   });

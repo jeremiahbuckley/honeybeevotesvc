@@ -13,14 +13,12 @@ module.exports = function () {
 
   function returnGet(req, res) {
     return function (error, response) {
-      if (error === null) {
-        if (response === null || response === undefined || response.length === 0) {
-          res.status(404).send();
-        } else {
-          res.status(200).send(response);
-        }
-      } else {
+      if (error) {
         res.status(500).send(error);
+      } else if (response) {
+        res.status(200).send(response);
+      } else {
+        res.status(404).send();
       }
     };
   }
@@ -36,40 +34,38 @@ module.exports = function () {
   router.post('/', (req, res) => {
     const election = new mongoose.models.election(req.body);
     election.save((error, response) => {
-      if (error === null) {
-        res.status(201).send(req.originalUrl + '/' + response._id);
-      } else {
+      if (error) {
         res.status(500).send(error);
+      } else {
+        res.status(201).send(req.originalUrl + '/' + response._id);
       }
     });
   });
 
   router.put('/:id', (req, res) => {
     mongoose.models.election.findOne({_id: req.params.id}, (error, response) => {
-      if (error === null) {
-        if (response === null || response === undefined || response.length === 0) {
-          const election = new mongoose.models.election(req.body);
-          election.save((error, response) => {
-            if (error === null) {
-              res.status(201).send(req.originalUrl + '/' + response._id);
-            } else {
+      if (error) {
+        res.status(500).send(error);
+      } else if (response) {
+        mongoose.models.election.update({_id: response._id},
+          req.body,
+          {runValidators: true},
+          error => {
+            if (error) {
               res.status(500).send(error);
+            } else {
+              res.status(200).send(req.originalUrl);
             }
           });
-        } else {
-          mongoose.models.election.update({_id: response._id},
-            req.body,
-            {runValidators: true},
-            error => {
-              if (error === null) {
-                res.status(200).send(req.originalUrl);
-              } else {
-                res.status(500).send(error);
-              }
-            });
-        }
       } else {
-        res.status(500).send(error);
+        const election = new mongoose.models.election(req.body);
+        election.save((error, response) => {
+          if (error) {
+            res.status(500).send(error);
+          } else {
+            res.status(201).send(req.originalUrl + '/' + response._id);
+          }
+        });
       }
     });
   });
@@ -84,20 +80,18 @@ module.exports = function () {
 
   router.delete('/:id', (req, res) => {
     mongoose.models.election.find({_id: req.params.id}, (error, response) => {
-      if (error === null) {
-        if (response === null || response === undefined || response.length === 0) {
-          res.status(404).send();
-        } else {
-          mongoose.models.election.remove({_id: req.params.id}, error => {
-            if (error === null) {
-              res.status(200).send();
-            } else {
-              res.status(500).send(error);
-            }
-          });
-        }
-      } else {
+      if (error) {
         res.status(500).send(error);
+      } else if (response) {
+        mongoose.models.election.remove({_id: req.params.id}, error => {
+          if (error) {
+            res.status(500).send(error);
+          } else {
+            res.status(200).send();
+          }
+        });
+      } else {
+        res.status(404).send();
       }
     });
   });
@@ -120,23 +114,21 @@ module.exports = function () {
     update[verb][participantType] = mongoose.Types.ObjectId(participantId);
 
     mongoose.models.election.findOne({_id: electionId}, (error, response) => {
-      if (error === null) {
-        if (response === null || response === undefined || response.length === 0) {
-          res.status(500).send('Election ' + electionId + ' does not exist.');
-        } else {
-          mongoose.models.election.update({_id: response._id},
-            update,
-            {runValidators: true},
-            error => {
-              if (error === null) {
-                res.status(200).send(req.originalUrl);
-              } else {
-                res.status(500).send(error);
-              }
-            });
-        }
-      } else {
+      if (error) {
         res.status(500).send(error);
+      } else if (response) {
+        mongoose.models.election.update({_id: response._id},
+          update,
+          {runValidators: true},
+          error => {
+            if (error) {
+              res.status(500).send(error);
+            } else {
+              res.status(200).send(req.originalUrl);
+            }
+          });
+      } else {
+        res.status(500).send('Election ' + electionId + ' does not exist.');
       }
     });
   }

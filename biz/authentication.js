@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-function auth(username, password, cb) {
+function authorize(username, password, cb) {
   mongoose.models.voter.findOne({name: username}, (error, result) => {
     if (error) {
       return cb(error);
@@ -15,4 +15,4 @@ function auth(username, password, cb) {
   });
 }
 
-module.exports = {auth: auth};
+module.exports = {auth: authorize};
